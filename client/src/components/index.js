@@ -10,8 +10,9 @@ import {
   ProductByCategory,
   CheckoutPage,
 } from "./shop";
-import { DashboardAdmin, Categories, Products, Orders } from "./admin";
-import { UserProfile, UserOrders, SettingUser } from "./shop/dashboardUser";
+import { DashboardAdmin, Categories, Products, Orders, HospitalDetails, EditProfile } from "./admin";
+import { UserProfile, UserOrders, SettingUser, PhoneVerify } from "./shop/dashboardUser";
+import ResetPassword from "./shop/auth/ResetPassword";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 
@@ -34,6 +35,7 @@ const Routes = (props) => {
           path="/checkout"
           component={CheckoutPage}
         />
+        <Route exact path="/reset-password/:resetToken" component={ResetPassword} />
         {/* Shop & Public Routes End */}
 
         {/* Admin Routes */}
@@ -57,6 +59,16 @@ const Routes = (props) => {
           path="/admin/dashboard/orders"
           component={Orders}
         />
+        <AdminProtectedRoute
+          exact={true}
+          path="/admin/dashboard/hospital-details"
+          component={HospitalDetails}
+        />
+        <AdminProtectedRoute
+          exact={true}
+          path="/admin/dashboard/edit-profile"
+          component={EditProfile}
+        />
         {/* Admin Routes End */}
 
         {/* User Dashboard */}
@@ -64,6 +76,11 @@ const Routes = (props) => {
           exact={true}
           path="/user/profile"
           component={UserProfile}
+        />
+        <ProtectedRoute
+          exact={true}
+          path="/user/verify-phone"
+          component={PhoneVerify}
         />
         <ProtectedRoute
           exact={true}

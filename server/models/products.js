@@ -4,7 +4,7 @@ const { ObjectId } = mongoose.Schema.Types;
 const productSchema = new mongoose.Schema(
   {
     pName: {
-      type: Number,
+      type: String,
       required: true,
     },
     pDescription: {
@@ -47,6 +47,23 @@ const productSchema = new mongoose.Schema(
       },
     ],
     pStatus: {
+      type: String,
+      required: true,
+    },
+    user: {
+      type: ObjectId,
+      ref: "users",
+      required: true,
+    },
+    hname: {
+      type: String,
+      required: true,
+    },
+    hemail: {
+      type: String,
+      required: true,
+    },
+    hphone: {
       type: String,
       required: true,
     },

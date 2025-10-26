@@ -47,7 +47,14 @@ const AddProductDetail = ({ categories }) => {
     }
 
     try {
-      let responseData = await createProduct(fData);
+      // Get current user ID from localStorage
+      const currentUser = JSON.parse(localStorage.getItem("jwt"));
+      const userData = {
+        ...fData,
+        user: currentUser ? currentUser.user._id : null
+      };
+      
+      let responseData = await createProduct(userData);
       if (responseData.success) {
         fetchData();
         setFdata({
@@ -305,6 +312,8 @@ const AddProductDetail = ({ categories }) => {
                 />
               </div> */}
             </div>
+            
+            
             <div className="flex flex-col space-y-1 w-full pb-4 md:pb-6 mt-4">
               <button
                 style={{ background: "#303031" }}
@@ -326,12 +335,19 @@ const AddProductModal = (props) => {
     fetchCategoryData();
   }, []);
 
-  const [allCat, setAllCat] = useState({});
+  const [allCat, setAllCat] = useState([]);
 
   const fetchCategoryData = async () => {
-    let responseData = await getAllCategory();
-    if (responseData.Categories) {
-      setAllCat(responseData.Categories);
+    try {
+      let responseData = await getAllCategory();
+      if (responseData && responseData.Categories) {
+        setAllCat(responseData.Categories);
+      } else {
+        setAllCat([]);
+      }
+    } catch (err) {
+      console.error("fetchCategoryData error", err);
+      setAllCat([]);
     }
   };
 

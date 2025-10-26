@@ -1,4 +1,5 @@
 const productModel = require("../models/products");
+const userModel = require("../models/users");
 const fs = require("fs");
 const path = require("path");
 
@@ -42,7 +43,7 @@ class Product {
   }
 
   async postAddProduct(req, res) {
-    let { pName, pDescription, pPrice, pQuantity, pCategory, pOffer, pStatus } =
+    let { pName, pDescription, pPrice, pQuantity, pCategory, pOffer, pStatus, user } =
       req.body;
     let images = req.files;
     // Validation
@@ -53,7 +54,8 @@ class Product {
       !pQuantity |
       !pCategory |
       !pOffer |
-      !pStatus
+      !pStatus |
+      !user
     ) {
       Product.deleteImages(images, "file");
       return res.json({ error: "All filled must be required" });
@@ -69,22 +71,39 @@ class Product {
     else if (images.length !== 2) {
       Product.deleteImages(images, "file");
       return res.json({ error: "Must need to provide 2 images" });
-    } else {
-      try {
-        let allImages = [];
-        for (const img of images) {
-          allImages.push(img.filename);
-        }
-        let newProduct = new productModel({
-          pImages: allImages,
-          pName,
-          pDescription,
-          pPrice,
-          pQuantity,
-          pCategory,
-          pOffer,
-          pStatus,
-        });
+      } else {
+        try {
+          // Fetch hospital user details to auto-populate contact information
+          const hospitalUser = await userModel.findById(user).select("name email phoneNumber userType");
+          
+          if (!hospitalUser) {
+            Product.deleteImages(images, "file");
+            return res.json({ error: "Hospital user not found" });
+          }
+          
+          if (hospitalUser.userType !== "hospital") {
+            Product.deleteImages(images, "file");
+            return res.json({ error: "Only hospitals can add products" });
+          }
+          
+          let allImages = [];
+          for (const img of images) {
+            allImages.push(img.filename);
+          }
+          let newProduct = new productModel({
+            pImages: allImages,
+            pName,
+            pDescription,
+            pPrice,
+            pQuantity,
+            pCategory,
+            pOffer,
+            pStatus,
+            user,
+            hname: hospitalUser.name,
+            hemail: hospitalUser.email,
+            hphone: hospitalUser.phoneNumber || "",
+          });
         let save = await newProduct.save();
         if (save) {
           return res.json({ success: "Product created successfully" });

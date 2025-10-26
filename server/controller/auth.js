@@ -26,7 +26,7 @@ class Auth {
 
   /* User Registration/Signup controller  */
   async postSignup(req, res) {
-    let { name, email, password, cPassword } = req.body;
+    let { name, email, password, cPassword, phoneNumber, userRole } = req.body;
     let error = {};
     if (!name || !email || !password || !cPassword) {
       error = {
@@ -66,12 +66,16 @@ class Auth {
               };
               return res.json({ error });
             } else {
+              // Determine role: 0 = patient/customer, 1 = admin/procurement (existing)
+              const resolvedRole = userRole === 0 || userRole === "0" ? 0 : 1;
+              const resolvedType = resolvedRole === 0 ? "patient" : "hospital";
               let newUser = new userModel({
                 name,
                 email,
                 password,
-                // ========= Here role 1 for Procurement signup role 0 for Hospital signup =========
-                userRole: 1, // Field Name change to userRole from role
+                userRole: resolvedRole,
+                userType: resolvedType,
+                phoneNumber: phoneNumber || undefined,
               });
               newUser
                 .save()

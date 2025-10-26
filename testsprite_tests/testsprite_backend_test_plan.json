@@ -1,0 +1,52 @@
+[
+  {
+    "id": "TC001",
+    "title": "user registration with valid data",
+    "description": "Test the /api/signup endpoint to ensure that user registration completes successfully with valid name, email, password, and userType (patient or hospital). Verify that the response includes a success status and a JWT token for authentication."
+  },
+  {
+    "id": "TC002",
+    "title": "user login with correct credentials",
+    "description": "Test the /api/signin endpoint to verify that users can log in with valid email and password. Confirm that the response returns a JWT token and user role information for subsequent role-based access control."
+  },
+  {
+    "id": "TC003",
+    "title": "admin status check for authenticated user",
+    "description": "Test the /api/isadmin endpoint by sending a request with a valid JWT token to check if the user has admin privileges. Verify that the response correctly indicates the admin status of the user."
+  },
+  {
+    "id": "TC004",
+    "title": "medical document upload and verification status",
+    "description": "Test the medical document upload functionality to ensure that PDF/image files are securely uploaded, stored in cloud storage, and that the verification status is accurately tracked and reflected for hospital admin review."
+  },
+  {
+    "id": "TC005",
+    "title": "ai powered donor recipient matching algorithm",
+    "description": "Test the AI-powered matching algorithm to verify that donor-recipient matches are generated based on organ/blood type compatibility, urgency, and geographic distance using Google Maps integration. Confirm that matches are prioritized correctly."
+  },
+  {
+    "id": "TC006",
+    "title": "real time notifications delivery",
+    "description": "Test the notification system to ensure that email (via Nodemailer), SMS (via Twilio), and real-time web socket updates (via Socket.IO) are reliably sent to users with a delivery success rate above 95%."
+  },
+  {
+    "id": "TC007",
+    "title": "hospital admin dashboard real time data accuracy",
+    "description": "Test the hospital admin dashboard to verify that it displays accurate real-time data for active donors, recipients, document verification statuses, and donation queues, reflecting the current system state."
+  },
+  {
+    "id": "TC008",
+    "title": "role based access control enforcement",
+    "description": "Test all API endpoints to ensure that HTTPS is enforced, sensitive data is encrypted, and role-based access control is properly implemented to restrict access based on user roles (donor, recipient, hospital admin)."
+  },
+  {
+    "id": "TC009",
+    "title": "user password change functionality",
+    "description": "Test the /api/user/change-password endpoint to verify that users can successfully change their password by providing the current password and a new password, and that the change is reflected in the authentication system."
+  },
+  {
+    "id": "TC010",
+    "title": "forgot password workflow initiation",
+    "description": "Test the /api/user/forgot-password endpoint to ensure that users can initiate a password reset process by providing their registered email, and that a password reset email is sent securely."
+  }
+]

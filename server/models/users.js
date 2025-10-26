@@ -22,8 +22,33 @@ const userSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    userType: {
+      type: String, // "patient" or "hospital"
+      enum: ["patient", "hospital"],
+      default: "patient",
+    },
     phoneNumber: {
       type: Number,
+    },
+    phoneVerified: {
+      type: Boolean,
+      default: false,
+    },
+    otpCode: {
+      type: String,
+      default: null,
+    },
+    otpExpires: {
+      type: Date,
+      default: null,
+    },
+    resetToken: {
+      type: String,
+      default: null,
+    },
+    resetTokenExpires: {
+      type: Date,
+      default: null,
     },
     userImage: {
       type: String,

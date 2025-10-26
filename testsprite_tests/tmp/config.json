@@ -1,0 +1,19 @@
+{
+  "status": "commited",
+  "type": "backend",
+  "scope": "codebase",
+  "localEndpoint": "http://localhost:8000",
+  "backendAuthType": "basic token",
+  "backendUsername": "omkardsutar476@gmail.com",
+  "backendPassword": "12345678",
+  "executionArgs": {
+    "projectName": "shushruta",
+    "projectPath": "C:\\Users\\TUF GAMING\\OneDrive\\Desktop\\BE project\\working on shushruta\\shushruta",
+    "testIds": [],
+    "additionalInstruction": "Run comprehensive frontend testing for the Shushruta organ transfer web application. Test user interface components, navigation, forms, authentication flows, product browsing, shopping cart, wishlist, and admin dashboard functionality. Focus on testing the React-based frontend with proper user interactions and responsive design.",
+    "envs": {
+      "API_KEY": "sk-user-MHCfaH5yX8pGwxB7soqzeS_VjJWehy572oBt6GOd4Yxdrrycy5YnIqCHlwehFMHaXdGL6eflBiD3QbDnL033lGn2hLWuDElKQ7kelOPfAN6z2cPEeU9rzAzaUz1P8dCTbfA"
+    }
+  },
+  "proxy": "http://b3d2e4e7-efab-43db-a766-c805e07e7bab:xFVVxwONB9a7qrkgEfIsq0Z9WRP67OrH@tun.testsprite.com:8080"
+}

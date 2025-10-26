@@ -5,8 +5,10 @@ const Signup = (props) => {
   const [data, setData] = useState({
     name: "",
     email: "",
+    phoneNumber: "",
     password: "",
     cPassword: "",
+    userRole: 0, // 0 = Patient, 1 = Hospital/Procurement
     error: false,
     loading: false,
     success: false,
@@ -31,8 +33,10 @@ const Signup = (props) => {
       let responseData = await signupReq({
         name: data.name,
         email: data.email,
+        phoneNumber: data.phoneNumber,
         password: data.password,
         cPassword: data.cPassword,
+        userRole: data.userRole,
       });
       if (responseData.error) {
         setData({
@@ -60,7 +64,28 @@ const Signup = (props) => {
 
   return (
     <Fragment>
-      <div className="text-center text-2xl mb-6">Register Hospital</div>
+      <div className="text-center text-2xl mb-6">Create Account</div>
+        <div className="flex flex-col">
+          <label htmlFor="role">
+            Account type<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <select
+            id="role"
+            className="px-4 py-2 focus:outline-none border"
+            value={data.userRole}
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                userRole: Number(e.target.value),
+              })
+            }
+          >
+            <option value={0}>Patient</option>
+            <option value={1}>Hospital / Procurement</option>
+          </select>
+        </div>
       <form className="space-y-4">
         {data.success ? alert(data.success, "green") : ""}
         <div className="flex flex-col">
@@ -108,6 +133,28 @@ const Signup = (props) => {
           {!data.error ? "" : alert(data.error.email, "red")}
         </div>
         <div className="flex flex-col">
+          <label htmlFor="phone">
+            Phone number<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                phoneNumber: e.target.value,
+              })
+            }
+            value={data.phoneNumber}
+            type="tel"
+            id="phone"
+            className={`${
+              data.error.phoneNumber ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.phoneNumber, "red")}
+        </div>
+        <div className="flex flex-col">
           <label htmlFor="password">
             Password<span className="text-sm text-gray-600 ml-1">*</span>
           </label>
@@ -152,7 +199,7 @@ const Signup = (props) => {
           />
           {!data.error ? "" : alert(data.error.cPassword, "red")}
         </div>
-        <div className="flex flex-col space-y-2 md:flex-row md:justify-between md:items-center">
+        <div className="flex flex-col">
           <div>
             <input
               type="checkbox"
@@ -163,9 +210,6 @@ const Signup = (props) => {
               Remember me<span className="text-sm text-gray-600">*</span>
             </label>
           </div>
-          <a className="block text-gray-600" href="/">
-            Forgot your password?
-          </a>
         </div>
         <div
           onClick={(e) => formSubmit()}

@@ -7,7 +7,7 @@ const apiURL = process.env.REACT_APP_API_URL;
 const EditProductModal = (props) => {
   const { data, dispatch } = useContext(ProductContext);
 
-  const [categories, setCategories] = useState(null);
+  const [categories, setCategories] = useState([]);
 
   const alert = (msg, type) => (
     <div className={`bg-${type}-200 py-2 px-4 w-full`}>{msg}</div>
@@ -33,9 +33,16 @@ const EditProductModal = (props) => {
   }, []);
 
   const fetchCategoryData = async () => {
-    let responseData = await getAllCategory();
-    if (responseData.Categories) {
-      setCategories(responseData.Categories);
+    try {
+      let responseData = await getAllCategory();
+      if (responseData && responseData.Categories) {
+        setCategories(responseData.Categories);
+      } else {
+        setCategories([]);
+      }
+    } catch (err) {
+      console.error("fetchCategoryData error", err);
+      setCategories([]);
     }
   };
 

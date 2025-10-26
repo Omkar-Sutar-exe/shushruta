@@ -41,13 +41,10 @@ export const homeReducer = (state, action) => {
         products:
           action.productArray &&
           action.productArray.filter((item) => {
-            if (
-              item.pName.toUpperCase().indexOf(action.payload.toUpperCase()) !==
-              -1
-            ) {
-              return item;
-            }
-            return null;
+            // Defensive: ensure both pName and payload are strings before comparing
+            const name = String(item && item.pName ? item.pName : "");
+            const query = String(action.payload ? action.payload : "");
+            return name.toUpperCase().indexOf(query.toUpperCase()) !== -1;
           }),
       };
     case "loading":

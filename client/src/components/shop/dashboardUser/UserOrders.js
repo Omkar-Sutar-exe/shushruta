@@ -30,21 +30,31 @@ const TableBody = ({ order }) => {
       <tr className="border-b">
         <td className="w-48 hover:bg-gray-200 p-2 flex flex-col space-y-1">
           {order.allProduct.map((product, i) => {
+            // Handle null product reference
+            if (!product.id || !product.id.pImages || product.id.pImages.length === 0) {
+              return (
+                <div className="block flex items-center space-x-2" key={i}>
+                  <div className="w-8 h-8 bg-gray-200 flex items-center justify-center text-xs text-gray-500">
+                    N/A
+                  </div>
+                  <span className="text-sm text-gray-400">Product unavailable</span>
+                </div>
+              );
+            }
             return (
-              <span className="block flex items-center space-x-2" key={i}>
+              <div className="block flex items-center space-x-2" key={i}>
                 <img
                   className="w-8 h-8 object-cover object-center"
                   src={`${apiURL}/uploads/products/${product.id.pImages[0]}`}
                   alt="productImage"
                 />
-                {/* <span>{product.id.pPrice}</span> */}
-                {/* <span>{product.quantitiy}x</span> */}
-                <td className="hover:bg-gray-200 p-2 text-center">
-          {order.transactionId}
-        </td>
-              </span>
+                <span className="text-sm">{product.id.pName}</span>
+              </div>
             );
           })}
+        </td>
+        <td className="hover:bg-gray-200 p-2 text-center">
+          {order.transactionId}
         </td>
         <td className="hover:bg-gray-200 p-2 text-center cursor-default">
           {order.status === "Not processed" && (
@@ -78,7 +88,6 @@ const TableBody = ({ order }) => {
         </td>
         <td className="hover:bg-gray-200 p-2 text-center">{order.phone}</td>
         <td className="hover:bg-gray-200 p-2 text-center">{order.address}</td>
-      
         <td className="hover:bg-gray-200 p-2 text-center">
           {moment(order.createdAt).format("lll")}
         </td>
@@ -131,20 +140,9 @@ const OrdersComponent = () => {
             <table className="table-auto border w-full my-2">
               <TableHeader />
               <tbody>
-                {orders && orders.length > 0 ? (
-                  orders.map((item, i) => {
-                    return <TableBody key={i} order={item} />;
-                  })
-                ) : (
-                  <tr>
-                    <td
-                      colSpan="8"
-                      className="text-xl text-center font-semibold py-8"
-                    >
-                      No order found
-                    </td>
-                  </tr>
-                )}
+                {orders && orders.length > 0
+                  ? orders.map((item, i) => <TableBody key={i} order={item} />)
+                  : null}
               </tbody>
             </table>
             <div className="text-sm text-gray-600 mt-2">

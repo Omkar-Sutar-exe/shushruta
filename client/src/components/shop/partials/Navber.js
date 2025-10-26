@@ -134,30 +134,6 @@ const Navber = (props) => {
                       <Fragment>
                         <li className="flex flex-col text-gray-700 w-48 shadow-lg">
                           <span
-                            onClick={(e) => history.push("/user/orders")}
-                            className="flex space-x-2 py-2 px-8 hover:bg-gray-400 cursor-pointer"
-                          >
-                            <span>
-                            <svg
-  class="w-8 h-8 text-black hover:text-green-700"
-  fill="none"
-  stroke="currentColor"
-  viewBox="0 0 24 24"
-  xmlns="http://www.w3.org/2000/svg"
-  width="16" height="16"
->
-  <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
-    d="M12 19V5M5 12l7-7 7 7"
-  />
-</svg>
-
-                            </span>
-                            <span>Requests</span>
-                          </span>
-                          <span
                             onClick={(e) => history.push("/user/profile")}
                             className="flex space-x-2 py-2 px-8 hover:bg-gray-400 cursor-pointer"
                           >
@@ -342,16 +318,16 @@ const Navber = (props) => {
               title="Organs"
             >
             <svg
-  class="w-8 h-8 text-black hover:text-green-700"
+  className="w-8 h-8 text-black hover:text-green-700"
   fill="none"
   stroke="currentColor"
   viewBox="0 0 24 24"
   xmlns="http://www.w3.org/2000/svg"
 >
   <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
     d="M12 3V1M8 4v3H4v12a2 2 0 002 2h12a2 2 0 002-2V7h-4V4h-4zm4 0h-2V1h2v3z"
   />
   <path

@@ -1,0 +1,43 @@
+# ===========================================
+# SHUSHRUTA PROJECT - ENVIRONMENT CONFIGURATION
+# ===========================================
+
+# Database Configuration
+DATABASE=mongodb://127.0.0.1:27017/Shushruta
+PORT=8000
+NODE_ENV=development
+
+# JWT Secret Key
+JWT_SECRET=ShushrutaSecretKey2024
+
+# ===========================================
+# TWILIO SMS CONFIGURATION
+# ===========================================
+
+# Twilio Account Credentials (Get from https://console.twilio.com/)
+TWILIO_ACCOUNT_SID=your_account_sid_here
+TWILIO_AUTH_TOKEN=your_auth_token_here
+TWILIO_FROM=+1234567890
+
+# ===========================================
+# EMAIL/SMTP CONFIGURATION
+# ===========================================
+
+# SMTP Server Settings (Gmail Example)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your-videoeditoromkar@gmail.com
+SMTP_PASS=nybrhasfdphkcewd
+
+# Email Configuration
+MAIL_FROM=videoeditoromkar@gmail.com
+ADMIN_EMAIL=admin@shushruta.com
+MAIL_TO=admin@shushruta.com
+
+# ===========================================
+# FRONTEND CONFIGURATION
+# ===========================================
+
+# React App API URL
+REACT_APP_API_URL=http://localhost:8000

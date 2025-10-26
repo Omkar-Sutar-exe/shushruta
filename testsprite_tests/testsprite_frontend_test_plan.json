@@ -1,0 +1,425 @@
+[
+  {
+    "id": "TC001",
+    "title": "User Registration Success",
+    "description": "Verify that a user (Donor, Recipient, Hospital) can successfully register with valid data and receives a valid JWT token.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to the user registration endpoint."
+      },
+      {
+        "type": "action",
+        "description": "Submit registration form with valid name, email, password, and userType."
+      },
+      {
+        "type": "assertion",
+        "description": "Check that the registration is successful and a valid JWT token is returned."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify user role is correctly assigned and stored."
+      }
+    ]
+  },
+  {
+    "id": "TC002",
+    "title": "User Registration Failure with Invalid Data",
+    "description": "Verify system rejects user registration with missing or invalid fields including invalid email format and unsupported userType values.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to register with missing required fields (e.g., no email)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that registration fails with appropriate validation error messages."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to register with invalid email format."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that registration is rejected with validation error."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to register with an invalid userType value."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rejection with appropriate error message for userType."
+      }
+    ]
+  },
+  {
+    "id": "TC003",
+    "title": "User Authentication Success",
+    "description": "Verify that registered users can log in with correct credentials and receive a valid JWT token.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to login endpoint."
+      },
+      {
+        "type": "action",
+        "description": "Submit valid email and password for an existing user."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login is successful and a valid JWT token for the user is returned."
+      }
+    ]
+  },
+  {
+    "id": "TC004",
+    "title": "User Authentication Failure with Incorrect Credentials",
+    "description": "Verify that login fails with incorrect email or password.",
+    "category": "error handling",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to login with incorrect email."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login is rejected with an authentication error."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to login with incorrect password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify login is rejected with an authentication error."
+      }
+    ]
+  },
+  {
+    "id": "TC005",
+    "title": "Role-Based Access Control Enforcement",
+    "description": "Verify that users cannot access endpoints or dashboard functionalities not permitted by their roles.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Log in as Donor."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to access Hospital admin dashboard and restricted APIs."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is denied with appropriate authorization error."
+      },
+      {
+        "type": "action",
+        "description": "Log in as Hospital admin."
+      },
+      {
+        "type": "action",
+        "description": "Access hospital dashboard and document verification features."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify access is granted only to authorized hospital admin functionalities."
+      }
+    ]
+  },
+  {
+    "id": "TC006",
+    "title": "Medical Document Upload Success",
+    "description": "Verify users can upload medical reports in supported PDF/image formats and documents are securely stored and marked pending verification.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Donor or Recipient."
+      },
+      {
+        "type": "action",
+        "description": "Upload medical report file in valid PDF format."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify upload completes successfully and document status is set to 'pending verification'."
+      },
+      {
+        "type": "action",
+        "description": "Upload medical report file in valid image format (e.g., PNG, JPG)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify upload completes successfully and document status is set to 'pending verification'."
+      }
+    ]
+  },
+  {
+    "id": "TC007",
+    "title": "Medical Document Upload Failure for Unsupported Formats and Large Files",
+    "description": "Verify system rejects uploads with unsupported file formats and files exceeding size limits.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to upload a file with unsupported extension (e.g., .exe)."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rejection with an appropriate unsupported file type error."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to upload a file exceeding maximum configured size."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rejection with file size limit error."
+      }
+    ]
+  },
+  {
+    "id": "TC008",
+    "title": "Hospital Admin Document Verification Workflow",
+    "description": "Verify hospital admins can view uploaded medical documents, approve or reject them, and that status updates propagate correctly.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as Hospital admin."
+      },
+      {
+        "type": "action",
+        "description": "Access list of pending medical document uploads."
+      },
+      {
+        "type": "action",
+        "description": "Approve a valid medical document."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify document status updates to 'verified' and notification sent to user."
+      },
+      {
+        "type": "action",
+        "description": "Reject an uploaded document with comments."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify document status updates to 'rejected,' comments recorded, and user notified."
+      }
+    ]
+  },
+  {
+    "id": "TC009",
+    "title": "Donor-Recipient Matching Algorithm Accuracy",
+    "description": "Test that the AI-powered matching algorithm accounts correctly for organ/blood type compatibility, urgency, and geographic distance in prioritizing matches.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Create multiple donor and recipient profiles with varied organ/blood types, urgencies, and geographic locations."
+      },
+      {
+        "type": "action",
+        "description": "Trigger the matching algorithm execution."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify matches prioritize compatible organ and blood types."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify urgency levels influence match priority correctly."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify geographic distance is factored properly using Google Maps integration."
+      }
+    ]
+  },
+  {
+    "id": "TC010",
+    "title": "Real-Time Notifications Delivery",
+    "description": "Verify email, SMS, and real-time web socket notifications are sent successfully with over 95% delivery reliability.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Trigger a match event for a donor and recipient."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify email notification is received by both users."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify SMS notification is received by both users."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify web socket notification is received in real-time on user dashboards."
+      }
+    ]
+  },
+  {
+    "id": "TC011",
+    "title": "Hospital Admin Dashboard Real-Time Data Accuracy",
+    "description": "Verify the hospital admin dashboard displays accurate, real-time updates for active donors, recipients, document verifications, and donation queues.",
+    "category": "functional",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Login as hospital admin."
+      },
+      {
+        "type": "action",
+        "description": "Simulate updates to donor/recipient status, new document uploads, and donation queue changes."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify dashboard reflects these updates instantly and accurately."
+      }
+    ]
+  },
+  {
+    "id": "TC012",
+    "title": "HTTPS and Data Encryption Enforcement on Sensitive Endpoints",
+    "description": "Verify all sensitive endpoints enforce HTTPS and sensitive data is transmitted/handled with AES encryption and protected by middleware.",
+    "category": "security",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Attempt to access sensitive API endpoint over HTTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that the connection is refused or redirected to HTTPS."
+      },
+      {
+        "type": "action",
+        "description": "Inspect data transmission over HTTPS for encrypted payloads."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify AES encryption is used for sensitive fields in request and response bodies."
+      },
+      {
+        "type": "action",
+        "description": "Test middleware protections by sending requests that could exploit vulnerabilities."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify that Helmet headers, rate limiting, and other middleware reject or mitigate unsafe requests."
+      }
+    ]
+  },
+  {
+    "id": "TC013",
+    "title": "System Performance and Uptime",
+    "description": "Verify system uptime exceeds 99% during extended load tests and performance metrics show at least 50% reduction in donor-recipient match time.",
+    "category": "performance",
+    "priority": "High",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Measure system uptime over extended test period using monitoring tools."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify uptime is above 99%."
+      },
+      {
+        "type": "action",
+        "description": "Simulate realistic usage with multiple concurrent match requests."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify average donor-recipient match time is reduced by at least 50% compared to legacy or baseline."
+      }
+    ]
+  },
+  {
+    "id": "TC014",
+    "title": "Password Reset with OTP Verification",
+    "description": "Verify that users can initiate password reset, receive OTP, verify OTP, and successfully reset their password.",
+    "category": "functional",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to forgot password endpoint and request password reset with registered email."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify OTP is sent via email/SMS."
+      },
+      {
+        "type": "action",
+        "description": "Submit received OTP for verification."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify OTP is accepted and user is allowed to set a new password."
+      },
+      {
+        "type": "action",
+        "description": "Submit new password."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify password is updated and user can login with new password."
+      }
+    ]
+  },
+  {
+    "id": "TC015",
+    "title": "Invalid Password Reset Scenarios",
+    "description": "Verify system handles invalid OTP, expired OTP, and multiple failed attempts appropriately during password reset.",
+    "category": "error handling",
+    "priority": "Medium",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Submit incorrect OTP during password reset."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system rejects OTP with proper error message."
+      },
+      {
+        "type": "action",
+        "description": "Attempt to use expired OTP."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify rejection with expiration error."
+      },
+      {
+        "type": "action",
+        "description": "Simulate multiple failed OTP attempts."
+      },
+      {
+        "type": "assertion",
+        "description": "Verify system enforces rate limiting or temporary lockout."
+      }
+    ]
+  }
+]

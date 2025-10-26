@@ -59,9 +59,8 @@ const AllCategory = (props) => {
             </tr>
           </thead>
           <tbody>
-            {orders && orders.length > 0 ? (
-              orders.map((item, i) => {
-                return (
+            {orders && orders.length > 0
+              ? orders.map((item, i) => (
                   <CategoryTable
                     key={i}
                     order={item}
@@ -69,18 +68,8 @@ const AllCategory = (props) => {
                       editOrderReq(oId, type, status, dispatch)
                     }
                   />
-                );
-              })
-            ) : (
-              <tr>
-                <td
-                  colSpan="12"
-                  className="text-xl text-center font-semibold py-8"
-                >
-                  No Requests found
-                </td>
-              </tr>
-            )}
+                ))
+              : null}
           </tbody>
         </table>
         <div className="text-sm text-gray-600 mt-2">
@@ -94,6 +83,11 @@ const AllCategory = (props) => {
 /* Single Category Component */
 const CategoryTable = ({ order, editOrder }) => {
   const { dispatch } = useContext(OrderContext);
+  
+  // Add null check for order
+  if (!order) {
+    return null;
+  }
 // const createdAt = new Date(order.createdAt); // Convert createdAt to Date object
 //             const expirationDate = moment(createdAt).add(order.pName, 'hours'); // Calculate expiration date using moment.js
 //             const expirationTimeString = moment(expirationDate).format('LLL'); // Format expiration date into a string
@@ -117,15 +111,15 @@ const CategoryTable = ({ order, editOrder }) => {
       
       <tr className="border-b">
         <td className="w-48 hover:bg-gray-200 p-2 flex flex-col space-y-1">
-          {order.allProduct.map((product, i) => {
+          {order.allProduct && order.allProduct.map((product, i) => {
             return (
               <span className="block flex items-center space-x-2" key={i}>
                 <img
                   className="w-8 h-8 object-cover object-center"
-                  src={`${apiURL}/uploads/products/${product.id.pImages[0]}`}
+                  src={`${apiURL}/uploads/products/${product?.id?.pImages?.[0] || "default.png"}`}
                   alt="productImage"
                 />
-                <span>{product.id.pPrice   }</span> 
+                <span>{product?.id?.pPrice || "N/A"}</span> 
                 {/* <span>{product.quantitiy}x</span> */}
               </span>
             );
@@ -168,17 +162,17 @@ const CategoryTable = ({ order, editOrder }) => {
         <td className="hover:bg-gray-200 p-2 text-center">
           {order.transactionId}
         </td>
-        <td className="hover:bg-gray-200 p-2 text-center">{order.user.name}</td>
+        <td className="hover:bg-gray-200 p-2 text-center">{order.hname || "N/A"}</td>
         <td className="hover:bg-gray-200 p-2 text-center">
-          {order.user.email}
+          {order.hemail || "N/A"}
         </td>
-        <td className="hover:bg-gray-200 p-2 text-center">{order.phone}</td>
-        <td className="hover:bg-gray-200 p-2 text-center">{order.address}</td>
+        <td className="hover:bg-gray-200 p-2 text-center">{order.hphone || "N/A"}</td>
+        <td className="hover:bg-gray-200 p-2 text-center">{order.address || "N/A"}</td>
         <td className="hover:bg-gray-200 p-2 text-center">
-          {moment(order.createdAt).format("lll")}
+          {order.createdAt ? moment(order.createdAt).format("lll") : "N/A"}
         </td>
         <td className="hover:bg-gray-200 p-2 text-center">
-          {moment(order.updatedAt).format("lll")}
+          {order.updatedAt ? moment(order.updatedAt).format("lll") : "N/A"}
         </td>
         <td className="p-2 flex items-center justify-center">
           <span

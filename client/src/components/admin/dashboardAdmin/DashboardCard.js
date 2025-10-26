@@ -112,16 +112,16 @@ const DashboardCard = (props) => {
             </svg> */}
             
             <svg
-  class="w-6 h-6"
+  className="w-6 h-6"
   fill="none"
   stroke="currentColor"
   viewBox="0 0 24 24"
   xmlns="http://www.w3.org/2000/svg"
 >
   <path
-    stroke-linecap="round"
-    stroke-linejoin="round"
-    stroke-width="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
     d="M12 20s-8-4.5-8-8c0-2.757 5.373-6.918 8-9 2.627 2.082 8 6.243 8 9 0 3.5-8 8-8 8z"
   />
 </svg>

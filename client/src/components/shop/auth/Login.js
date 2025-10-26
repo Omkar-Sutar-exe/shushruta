@@ -1,6 +1,7 @@
 import React, { Fragment, useState, useContext } from "react";
 import { loginReq } from "./fetchApi";
 import { LayoutContext } from "../index";
+import ForgotPassword from "./ForgotPassword";
 
 const Login = (props) => {
   const { data: layoutData, dispatch: layoutDispatch } = useContext(
@@ -13,6 +14,8 @@ const Login = (props) => {
     error: false,
     loading: true,
   });
+
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
 
   const alert = (msg) => <div className="text-xs text-red-500">{msg}</div>;
 
@@ -33,12 +36,29 @@ const Login = (props) => {
       } else if (responseData.token) {
         setData({ email: "", password: "", loading: false, error: false });
         localStorage.setItem("jwt", JSON.stringify(responseData));
-        window.location.href = "/";
+        // Redirect based on role: 1 = admin/hospital, 0 = patient
+        const role = responseData?.user?.role;
+        if (role === 1) {
+          window.location.href = "/admin/dashboard";
+        } else {
+          window.location.href = "/user/profile";
+        }
       }
     } catch (error) {
       console.log(error);
     }
   };
+
+  if (showForgotPassword) {
+    return (
+      <Fragment>
+        <ForgotPassword
+          onClose={() => setShowForgotPassword(false)}
+          onSuccess={() => setShowForgotPassword(false)}
+        />
+      </Fragment>
+    );
+  }
 
   return (
     <Fragment>
@@ -99,9 +119,13 @@ const Login = (props) => {
               Remember me<span className="text-sm text-gray-600">*</span>
             </label>
           </div>
-          <a className="block text-gray-600" href="/">
-            Lost your password?
-          </a>
+          <button
+            type="button"
+            onClick={() => setShowForgotPassword(true)}
+            className="block text-gray-600 hover:text-gray-800 hover:underline cursor-pointer"
+          >
+            Forgot password?
+          </button>
         </div>
         <div
           onClick={(e) => formSubmit()}

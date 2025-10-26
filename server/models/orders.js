@@ -41,6 +41,19 @@ const orderSchema = new mongoose.Schema(
         "Cancelled",
       ],
     },
+    // Hospital information
+    hname: {
+      type: String,
+      default: null,
+    },
+    hemail: {
+      type: String,
+      default: null,
+    },
+    hphone: {
+      type: String,
+      default: null,
+    },
   },
   { timestamps: true }
 );

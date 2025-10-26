@@ -77,17 +77,7 @@ const Sidebar = (props) => {
           >
             Setting
           </div>
-          <hr />
-          <div
-            onClick={(e) => logout()}
-            className={`${
-              location.pathname === "/admin/dashboard/categories"
-                ? "border-r-4 border-yellow-700 bg-gray-200"
-                : ""
-            }  px-4 py-4 hover:bg-gray-200 cursor-pointer`}
-          >
-            Logout
-          </div>
+          {/* Logout removed from sidebar per request */}
         </div>
       </div>
     </Fragment>

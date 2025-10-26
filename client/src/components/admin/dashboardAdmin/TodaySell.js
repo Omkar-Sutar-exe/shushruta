@@ -86,6 +86,14 @@ const TodayOrderTable = ({ order }) => {
       <tr>
         <td className="w-48 hover:bg-gray-200 p-2 flex flex-col space-y-1">
           {order.allProduct.map((item, index) => {
+            // Handle null product reference
+            if (!item.id) {
+              return (
+                <div key={index} className="flex space-x-2">
+                  <span className="text-gray-400">Product unavailable</span>
+                </div>
+              );
+            }
             return (
               <div key={index} className="flex space-x-2">
                 <span>{item.id.pPrice}</span>
@@ -96,6 +104,17 @@ const TodayOrderTable = ({ order }) => {
         </td>
         <td className="p-2 text-left">
           {order.allProduct.map((item, index) => {
+            // Handle null product reference
+            if (!item.id || !item.id.pImages || item.id.pImages.length === 0) {
+              return (
+                <div
+                  key={index}
+                  className="w-12 h-12 bg-gray-200 flex items-center justify-center text-xs text-gray-500"
+                >
+                  N/A
+                </div>
+              );
+            }
             return (
               <img
                 key={index}
