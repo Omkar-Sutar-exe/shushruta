@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
+
 try {
-  mongoose.connect("mongodb://127.0.0.1:27017/Shushruta", {
+  mongoose.connect(process.env.DATABASE || "mongodb://127.0.0.1:27017/Shushruta", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true, // Use createIndex instead of deprecated ensureIndex
