@@ -20,6 +20,7 @@ const orderRouter = require("./routes/orders");
 const usersRouter = require("./routes/users");
 const customizeRouter = require("./routes/customize");
 const mailRouter = require("./routes/mail");
+const adminRouter = require("./routes/admin");
 // Import Auth middleware for check user login or not~
 const { loginCheck } = require("./middleware/auth");
 const CreateAllFolder = require("./config/uploadFolderCreateScript");
@@ -53,6 +54,7 @@ app.use(cors());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(require('express-fileupload')({ useTempFiles: true }));
 
 // Routes
 app.use("/api", authRouter);
@@ -64,6 +66,8 @@ app.use("/api/product", productRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/customize", customizeRouter);
 app.use('/api/mail', mailRouter);
+
+app.use("/api/admin", adminRouter);
 
 // Run Server
 const PORT = process.env.PORT || 8001;

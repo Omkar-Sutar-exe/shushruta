@@ -1,6 +1,17 @@
 const userModel = require("../models/users");
+const { geocodeAddress } = require("../config/nominatim");
 const bcrypt = require("bcryptjs");
 const { sendSmsToUser } = require("../config/function");
+const cloudinary = require("cloudinary").v2;
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 // utilities not required
 // Twilio will be used if env credentials are provided
 let twilioClient = null;
@@ -37,7 +48,44 @@ class User {
       try {
         let User = await userModel
           .findById(uId)
-          .select("name email phoneNumber phoneVerified userImage updatedAt createdAt");
+          .select("name email phoneNumber phoneVerified userImage updatedAt createdAt address hospitalId hospitalInfo aadharCardUploaded medicalReportUploaded");
+        if (User) {
+                return res.json({ User });
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    }
+  }
+
+  async getUserByHospitalId(req, res) {
+    let { hospitalId } = req.body;
+    if (!hospitalId) {
+      return res.json({ error: "Hospital ID must be provided" });
+    } else {
+      try {
+        let User = await userModel
+          .findOne({ hospitalId: hospitalId })
+          .select("name email phoneNumber phoneVerified userImage updatedAt createdAt address hospitalId hospitalInfo");
+        if (User) {
+          return res.json({ User });
+        }
+      } catch (err) {
+        console.log(err);
+        return res.json({ error: "Server error" });
+      }
+    }
+  }
+
+  async postAddUser(req, res) {
+    let { uId } = req.body;
+    if (!uId) {
+      return res.json({ error: "All filled must be required" });
+    } else {
+      try {
+        let User = await userModel
+          .findById(uId)
+          .select("name email phoneNumber phoneVerified userImage updatedAt createdAt address hospitalId");
         if (User) {
           return res.json({ User });
         }
@@ -48,7 +96,7 @@ class User {
   }
 
   async postAddUser(req, res) {
-    let { allProduct, user, amount, transactionId, address, phone } = req.body;
+    let { allProduct, user, amount, transactionId, phone } = req.body;
     if (
       !allProduct ||
       !user ||
@@ -79,20 +127,58 @@ class User {
   }
 
   async postEditUser(req, res) {
-    let { uId, name, phoneNumber } = req.body;
+    let { uId, name, phoneNumber, street, city, state, postcode, country, latitude, longitude, hospitalId, hospitalInfo } = req.body;
     if (!uId || !name || !phoneNumber) {
       return res.json({ message: "All filled must be required" });
     } else {
       // Fetch existing user to detect phone number change
       try {
         const existing = await userModel.findById(uId);
-        if (!existing) return res.json({ error: "User not found" });
+            if (!existing) return res.json({ error: "User not found" });
 
-        const updates = {
-          name: name,
-          phoneNumber: phoneNumber,
-          updatedAt: Date.now(),
-        };
+            let geoCoordinates = { latitude: null, longitude: null };
+            if (street && city && state && postcode && country) {
+                try {
+                    geoCoordinates = await geocodeAddress(street, city, state, postcode, country);
+                    if (!geoCoordinates) {
+                        console.log("Geocoding failed for address:", { street, city, state, postcode, country });
+                        // Optionally, you can return an error to the client or proceed without coordinates
+                    }
+                } catch (geoErr) {
+                    console.error("Error during geocoding:", geoErr);
+                    // Optionally, you can return an error to the client or proceed without coordinates
+                }
+            }
+
+            const updates = {
+                name: name,
+                phoneNumber: phoneNumber,
+                updatedAt: Date.now(),
+                address: {
+                    street: street,
+                    city: city,
+                    state: state,
+                    postcode: postcode,
+                    country: country,
+                    latitude: latitude || geoCoordinates.latitude,
+                    longitude: longitude || geoCoordinates.longitude,
+                },
+                hospitalId: hospitalId, // Add hospitalId to updates
+            };
+
+            // Add hospitalInfo to updates if provided
+            if (hospitalInfo) {
+              updates.hospitalInfo = {
+                name: hospitalInfo.name || "",
+                street: hospitalInfo.street || "",
+                city: hospitalInfo.city || "",
+                state: hospitalInfo.state || "",
+                postcode: hospitalInfo.postcode || "",
+                country: hospitalInfo.country || "",
+                latitude: hospitalInfo.latitude || null,
+                longitude: hospitalInfo.longitude || null,
+              };
+            }
 
         // Check if phone number is being changed
         const oldPhone = existing.phoneNumber ? existing.phoneNumber.toString() : "";
@@ -367,6 +453,61 @@ class User {
       return res.json({ error: "Server error" });
     }
   }
+
+  async uploadDocuments(req, res) {
+    try {
+      // Check if files are present in the request
+      if (!req.files || Object.keys(req.files).length === 0) {
+        return res.status(400).json({ error: "No files were uploaded." });
+      }
+
+      const uploadedFiles = {};
+      const loggedInUserId = req.body.loggedInUserId; // Assuming loggedInUserId is sent in req.body
+
+      if (!loggedInUserId) {
+        return res.status(400).json({ error: "User ID not provided." });
+      }
+
+      const folderPath = `shushruta/user_documents/${loggedInUserId}`;
+      const user = await userModel.findById(loggedInUserId);
+      const isPatient = user && user.userType === 'patient'; // Corrected to use 'userType' field
+
+      for (const key in req.files) {
+        const file = req.files[key];
+        let subfolder = '';
+
+        if (isPatient) {
+          if (key === 'aadharCard') {
+            subfolder = 'Aadhar';
+          } else if (key === 'medicalReport') {
+            subfolder = 'MedicalReport';
+          }
+        }
+        
+        const result = await cloudinary.uploader.upload(file.tempFilePath, {
+          folder: `${folderPath}/${subfolder}`, // Dynamic folder based on user ID and subfolder
+        });
+        uploadedFiles[key] = result.secure_url;
+      }
+
+      // Update user document with upload status
+      const updateFields = {};
+      if (uploadedFiles.aadharCard) {
+        updateFields.aadharCardUploaded = true;
+      }
+      if (uploadedFiles.medicalReport) {
+        updateFields.medicalReportUploaded = true;
+      }
+
+      if (Object.keys(updateFields).length > 0) {
+        await userModel.findByIdAndUpdate(loggedInUserId, { $set: updateFields });
+      }
+
+      res.status(200).json({ message: "Files uploaded successfully", urls: uploadedFiles });
+    } catch (error) {
+      res.status(500).json({ error: "Internal server error during upload." });
+    }
+  }
 }
 
 const ordersController = new User();
@@ -383,5 +524,6 @@ ordersController.verifyOtp = ordersController.verifyOtp.bind(ordersController);
 ordersController.forgotPassword = ordersController.forgotPassword.bind(ordersController);
 ordersController.resetPassword = ordersController.resetPassword.bind(ordersController);
 ordersController.verifyResetToken = ordersController.verifyResetToken.bind(ordersController);
+ordersController.uploadDocuments = ordersController.uploadDocuments.bind(ordersController);
 
 module.exports = ordersController;

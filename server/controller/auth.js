@@ -4,6 +4,20 @@ const userModel = require("../models/users");
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/keys");
 
+// Helper function to generate a unique 8-digit hospital ID
+const generateUniqueHospitalId = async () => {
+  let isUnique = false;
+  let hospitalId;
+  while (!isUnique) {
+    hospitalId = Math.floor(10000000 + Math.random() * 90000000).toString(); // 8-digit number
+    const existingHospital = await userModel.findOne({ hospitalId });
+    if (!existingHospital) {
+      isUnique = true;
+    }
+  }
+  return hospitalId;
+};
+
 class Auth {
   async isAdmin(req, res) {
     let { loggedInUserId } = req.body;
@@ -70,6 +84,11 @@ class Auth {
               // Determine role: 0 = patient/customer, 1 = admin/procurement (existing)
               const resolvedRole = userRole === 2 || userRole === "2" ? 2 : (userRole === 0 || userRole === "0" ? 0 : 1);
               const resolvedType = resolvedRole === 0 ? "patient" : "hospital";
+              let hospitalId = undefined;
+              if (resolvedType === "hospital") {
+                hospitalId = await generateUniqueHospitalId();
+              }
+
               let newUser = new userModel({
                 name,
                 email,
@@ -77,6 +96,7 @@ class Auth {
                 userRole: resolvedRole,
                 userType: resolvedType,
                 phoneNumber: phoneNumber || undefined,
+                hospitalId: hospitalId,
               });
               newUser
                 .save()

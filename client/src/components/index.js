@@ -11,11 +11,11 @@ import {
   ProductByCategory,
   CheckoutPage,
 } from "./shop";
-import { DashboardAdmin, Products, Orders, HospitalDetails, EditProfile } from "./admin";
+import { DashboardAdmin, Products, Orders, HospitalDetails, EditProfile, AdminDocuments } from "./admin";
 import SuperAdminPage from "./superadmin/superAdminDashboard";
 import SuperAdminCategories from "./superadmin/categories";
 import SuperAdminRequests from "./superadmin/requests";
-import { UserProfile, UserOrders, SettingUser, PhoneVerify } from "./shop/dashboardUser";
+import { UserProfile, UserOrders, SettingUser, PhoneVerify, Documents } from "./shop/dashboardUser";
 import ResetPassword from "./shop/auth/ResetPassword";
 
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
@@ -69,6 +69,11 @@ const Routes = (props) => {
           path="/admin/dashboard/edit-profile"
           component={EditProfile}
         />
+        <AdminProtectedRoute
+          exact={true}
+          path="/admin/dashboard/documents"
+          component={AdminDocuments}
+        />
         {/* Admin Routes End */}
 
         {/* SuperAdmin Route */}
@@ -113,6 +118,11 @@ const Routes = (props) => {
           exact={true}
           path="/user/setting"
           component={SettingUser}
+        />
+        <ProtectedRoute
+          exact={true}
+          path="/user/documents"
+          component={Documents}
         />
         {/* User Dashboard End */}
 

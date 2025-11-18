@@ -54,6 +54,12 @@ export const updatePersonalInformationAction = async (dispatch, fData) => {
     uId: fData.id,
     name: fData.name,
     phoneNumber: fData.phone,
+    street: fData.address.street,
+    city: fData.address.city,
+    state: fData.address.state,
+    postcode: fData.address.postcode,
+    country: fData.address.country,
+    hospitalInfo: fData.hospitalInfo,
   };
   dispatch({ type: "loading", payload: true });
   try {

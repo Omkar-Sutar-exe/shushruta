@@ -1,5 +1,7 @@
 import React, { Fragment, useState, useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import useNominatimAutocomplete from "../../../hooks/useNominatimAutocomplete.js";
+import MapComponent from "../../common/MapComponent";
 import AdminLayout from "../layout";
 import { updatePersonalInformationFetch } from "../../shop/dashboardUser/FetchApi";
 import { sendOtp, verifyOtp } from "../../shop/dashboardUser/FetchApi";
@@ -10,7 +12,17 @@ const EditProfileComponent = () => {
   const [formData, setFormData] = useState({
     name: "",
     phoneNumber: "",
+    street: "",
+    city: "",
+    state: "",
+    postcode: "",
+    country: "",
+    latitude: null,
+    longitude: null,
   });
+  const [streetQuery, setStreetQuery] = useState("");
+  const { suggestions: streetSuggestions } = useNominatimAutocomplete(streetQuery);
+  const [showStreetSuggestions, setShowStreetSuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -30,6 +42,13 @@ const EditProfileComponent = () => {
       setFormData({
         name: currentUser.user.name || "",
         phoneNumber: currentUser.user.phoneNumber || "",
+        street: currentUser.user.address?.street || "",
+        city: currentUser.user.address?.city || "",
+        state: currentUser.user.address?.state || "",
+        postcode: currentUser.user.address?.postcode || "",
+        country: currentUser.user.address?.country || "",
+        latitude: currentUser.user.address?.latitude || null,
+        longitude: currentUser.user.address?.longitude || null,
       });
       setOtpState(prev => ({
         ...prev,
@@ -44,8 +63,20 @@ const EditProfileComponent = () => {
       ...formData,
       [name]: value,
     });
+    if (name === "street") {
+      setStreetQuery(value);
+      setShowStreetSuggestions(true);
+    }
     // Clear error when user starts typing
     if (error) setError("");
+  };
+
+  const handleLocationSelect = ({ lat, lng }) => {
+    setFormData(prev => ({
+      ...prev,
+      latitude: lat,
+      longitude: lng,
+    }));
   };
 
   const validateForm = () => {
@@ -63,6 +94,28 @@ const EditProfileComponent = () => {
       setError("Please enter a valid phone number");
       return false;
     }
+
+    if (!formData.street.trim()) {
+      setError("Street address is required");
+      return false;
+    }
+    if (!formData.city.trim()) {
+      setError("City is required");
+      return false;
+    }
+    if (!formData.state.trim()) {
+      setError("State is required");
+      return false;
+    }
+    if (!formData.postcode.trim()) {
+      setError("Postcode is required");
+      return false;
+    }
+    if (!formData.country.trim()) {
+      setError("Country is required");
+      return false;
+    }
+
     return true;
   };
 
@@ -85,6 +138,13 @@ const EditProfileComponent = () => {
         uId: hospitalInfo._id,
         name: formData.name,
         phoneNumber: formData.phoneNumber,
+        street: formData.street,
+        city: formData.city,
+        state: formData.state,
+        postcode: formData.postcode,
+        country: formData.country,
+        latitude: formData.latitude,
+        longitude: formData.longitude,
       });
 
       if (response && response.success) {
@@ -95,6 +155,15 @@ const EditProfileComponent = () => {
         if (currentUser && currentUser.user) {
           currentUser.user.name = formData.name;
           currentUser.user.phoneNumber = formData.phoneNumber;
+          currentUser.user.address = {
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            postcode: formData.postcode,
+            country: formData.country,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+          };
           // Reset phone verification if phone number changed
           if (hospitalInfo.phoneNumber !== formData.phoneNumber) {
             currentUser.user.phoneVerified = false;
@@ -107,6 +176,15 @@ const EditProfileComponent = () => {
           ...hospitalInfo,
           name: formData.name,
           phoneNumber: formData.phoneNumber,
+          address: {
+            street: formData.street,
+            city: formData.city,
+            state: formData.state,
+            postcode: formData.postcode,
+            country: formData.country,
+            latitude: formData.latitude,
+            longitude: formData.longitude,
+          },
           phoneVerified: hospitalInfo.phoneNumber === formData.phoneNumber ? hospitalInfo.phoneVerified : false,
         });
 
@@ -233,7 +311,6 @@ const EditProfileComponent = () => {
                 required
               />
             </div>
-
             <div>
               <label htmlFor="phoneNumber" className="block text-gray-700 font-semibold mb-2">
                 Phone Number *
@@ -279,6 +356,134 @@ const EditProfileComponent = () => {
               <p className="text-sm text-gray-500 mt-1">
                 Enter your phone number and click "Send OTP" to verify
               </p>
+            </div>
+
+
+            {/* Address Fields */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label htmlFor="street" className="block text-gray-700 font-semibold mb-2">
+                  Street *
+                </label>
+                <input
+                  type="text"
+                  id="street"
+                  name="street"
+                  value={formData.street}
+                  onChange={handleInputChange}
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
+                    error && error.includes("street") 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter street address"
+                  required
+                />
+                {showStreetSuggestions && streetSuggestions.length > 0 && (
+                  <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg shadow-lg mt-1 max-h-60 overflow-auto">
+                    {streetSuggestions.map((suggestion, index) => (
+                      <li
+                        key={index}
+                        className="px-4 py-2 cursor-pointer hover:bg-gray-100"
+                        onClick={() => {
+                          setFormData({ ...formData, street: suggestion.display_name });
+                          setStreetQuery(suggestion.display_name);
+                          setShowStreetSuggestions(false);
+                        }}
+                      >
+                        {suggestion.display_name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <div>
+                <label htmlFor="city" className="block text-gray-700 font-semibold mb-2">
+                  City *
+                </label>
+                <input
+                  type="text"
+                  id="city"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleInputChange}
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
+                    error && error.includes("city") 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter city"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="state" className="block text-gray-700 font-semibold mb-2">
+                  State *
+                </label>
+                <input
+                  type="text"
+                  id="state"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleInputChange}
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
+                    error && error.includes("state") 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter state"
+                  required
+                />
+              </div>
+              <div>
+                <label htmlFor="postcode" className="block text-gray-700 font-semibold mb-2">
+                  Postcode *
+                </label>
+                <input
+                  type="text"
+                  id="postcode"
+                  name="postcode"
+                  value={formData.postcode}
+                  onChange={handleInputChange}
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
+                    error && error.includes("postcode") 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter postcode"
+                  required
+                />
+              </div>
+              <div className="md:col-span-2">
+                <label htmlFor="country" className="block text-gray-700 font-semibold mb-2">
+                  Country *
+                </label>
+                <input
+                  type="text"
+                  id="country"
+                  name="country"
+                  value={formData.country}
+                  onChange={handleInputChange}
+                  className={`w-full border rounded-lg px-4 py-3 focus:outline-none focus:ring-2 ${
+                    error && error.includes("country") 
+                      ? "border-red-500 focus:ring-red-500" 
+                      : "border-gray-300 focus:ring-blue-500"
+                  }`}
+                  placeholder="Enter country"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <label className="block text-gray-700 font-semibold mb-2">
+                Select Location on Map
+              </label>
+              <MapComponent
+                initialLat={formData.latitude}
+                initialLng={formData.longitude}
+                onLocationSelected={handleLocationSelect}
+              />
             </div>
 
             {/* OTP Verification Section */}

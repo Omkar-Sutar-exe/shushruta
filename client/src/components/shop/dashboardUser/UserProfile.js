@@ -2,7 +2,10 @@ import React, { Fragment, useContext, useState, useEffect } from "react";
 import Layout from "./Layout";
 import { DashboardUserContext } from "./Layout";
 import { updatePersonalInformationAction } from "./Action";
+import { getUserByHospitalId } from "./FetchApi";
 import { useHistory } from "react-router-dom";
+
+
 
 const ProfileComponent = () => {
   const { data, dispatch } = useContext(DashboardUserContext);
@@ -13,8 +16,28 @@ const ProfileComponent = () => {
     name: "",
     email: "",
     phone: "",
+    street: "",
+    city: "",
+    state: "",
+    postcode: "",
+    country: "",
+    latitude: "",
+    longitude: "",
+    hospitalId: "",
+    hospitalInfo: {
+      name: "",
+      street: "",
+      city: "",
+      state: "",
+      postcode: "",
+      country: "",
+      latitude: "",
+      longitude: "",
+
+      },
     success: false,
   });
+  
 
   useEffect(() => {
     setFdata({
@@ -23,14 +46,150 @@ const ProfileComponent = () => {
       name: userDetails.name,
       email: userDetails.email,
       phone: userDetails.phoneNumber,
+      street: userDetails.address?.street || "",
+      city: userDetails.address?.city || "",
+      state: userDetails.address?.state || "",
+      postcode: userDetails.address?.postcode || "",
+      country: userDetails.address?.country || "",
+      latitude: userDetails.address?.latitude || "",
+      longitude: userDetails.address?.longitude || "",
+      hospitalId: userDetails.hospitalId || "",
+      hospitalInfo: {
+        name: userDetails.hospitalInfo?.name || "",
+        street: userDetails.hospitalInfo?.street || "",
+        city: userDetails.hospitalInfo?.city || "",
+        state: userDetails.hospitalInfo?.state || "",
+        postcode: userDetails.hospitalInfo?.postcode || "",
+        country: userDetails.hospitalInfo?.country || "",
+        latitude: userDetails.hospitalInfo?.latitude || "",
+        longitude: userDetails.hospitalInfo?.longitude || "",
+      },
     });
-
+    if (userDetails.hospitalId) {
+      fetchHospitalDetails();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userDetails]);
 
-  const handleSubmit = () => {
-    updatePersonalInformationAction(dispatch, fData);
+  const fetchHospitalDetails = async () => {
+    if (fData.hospitalId) {
+      try {
+        const response = await getUserByHospitalId(fData.hospitalId);
+        if (response && response.User) {
+          const hospitalUser = response.User;
+          setFdata((prevFdata) => ({
+            ...prevFdata,
+
+
+
+
+
+
+
+
+            hospitalInfo: {
+              name: hospitalUser.name || "",
+              street: hospitalUser.address?.street || "",
+              city: hospitalUser.address?.city || "",
+              state: hospitalUser.address?.state || "",
+              postcode: hospitalUser.address?.postcode || "",
+              country: hospitalUser.address?.country || "",
+              latitude: hospitalUser.address?.latitude || "",
+              longitude: hospitalUser.address?.longitude || "",
+            },
+          }));
+        } else {
+          // Clear address fields if hospital ID is not found or invalid
+          setFdata((prevFdata) => ({
+            ...prevFdata,
+
+
+
+
+
+
+
+
+            hospitalInfo: {
+      
+      
+      
+      
+      
+      
+      
+      
+            },
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching hospital details:", error);
+        // Clear address fields on error
+        setFdata((prevFdata) => ({
+          ...prevFdata,
+
+
+
+
+
+
+
+
+          hospitalInfo: {
+    
+    
+    
+    
+    
+    
+    
+    
+          },
+        }));
+      }
+    } else {
+      // Clear address fields if hospital ID is empty
+      setFdata((prevFdata) => ({
+        ...prevFdata,
+        name: "",
+        street: "",
+        city: "",
+        state: "",
+        postcode: "",
+        country: "",
+        latitude: "",
+        longitude: "",
+        hospitalInfo: {
+          name: "",
+          street: "",
+          city: "",
+          state: "",
+          postcode: "",
+          country: "",
+          latitude: "",
+          longitude: "",
+        },
+      }));
+    }
   };
+
+  const handleSubmit = () => {
+    updatePersonalInformationAction(dispatch, {
+      ...fData,
+      address: {
+        street: fData.street,
+        city: fData.city,
+        state: fData.state,
+        postcode: fData.postcode,
+        country: fData.country,
+        latitude: fData.latitude,
+        longitude: fData.longitude,
+      },
+
+    });
+  };
+
+  
 
   const history = useHistory();
 
@@ -79,6 +238,35 @@ const ProfileComponent = () => {
               />
             </div>
             <div className="flex flex-col space-y-2">
+              <label htmlFor="hospitalId">Hospital ID</label>
+              <div className="flex items-center space-x-2">
+                <input
+                  onChange={(e) => setFdata({ ...fData, hospitalId: e.target.value })}
+                  value={fData.hospitalId}
+                  type="text"
+                  id="hospitalId"
+                  className="border px-4 py-2 w-full focus:outline-none"
+                />
+                <button
+                  onClick={fetchHospitalDetails}
+                  className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none"
+                >
+                  Get Info
+                </button>
+              </div>
+            </div>
+            {fData.hospitalInfo.name && (
+              <div className="flex flex-col space-y-2 border p-4 rounded-md bg-gray-50">
+                <h3 className="text-md font-semibold">Hospital Details</h3>
+                <p><strong>Name:</strong> {fData.hospitalInfo.name}</p>
+                <p><strong>Street:</strong> {fData.hospitalInfo.street}</p>
+                <p><strong>City:</strong> {fData.hospitalInfo.city}</p>
+                <p><strong>State:</strong> {fData.hospitalInfo.state}</p>
+                <p><strong>Postcode:</strong> {fData.hospitalInfo.postcode}</p>
+                <p><strong>Country:</strong> {fData.hospitalInfo.country}</p>
+              </div>
+            )}
+            <div className="flex flex-col space-y-2">
               <label htmlFor="email">Email</label>
               <input
                 value={fData.email}
@@ -87,9 +275,7 @@ const ProfileComponent = () => {
                 id="email"
                 className="cursor-not-allowed border px-4 py-2 bg-gray-200 w-full focus:outline-none focus:cursor-not-allowed"
               />
-              <span className="text-xs text-gray-500">
-                You can't change your email
-              </span>
+              
             </div>
             <div className="flex flex-col space-y-2">
               <label htmlFor="number">Phone Number</label>
@@ -128,6 +314,61 @@ const ProfileComponent = () => {
                 </span>
               ) : null}
             </div>
+
+            {/* Address Fields */}
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="street">Street</label>
+              <input
+                onChange={(e) => {
+                  setFdata({ ...fData, street: e.target.value });
+                }}
+                value={fData.street}
+                type="text"
+                id="street"
+                className="border px-4 py-2 w-full focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="city">City</label>
+              <input
+                onChange={(e) => setFdata({ ...fData, city: e.target.value })}
+                value={fData.city}
+                type="text"
+                id="city"
+                className="border px-4 py-2 w-full focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="state">State</label>
+              <input
+                onChange={(e) => setFdata({ ...fData, state: e.target.value })}
+                value={fData.state}
+                type="text"
+                id="state"
+                className="border px-4 py-2 w-full focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="postcode">Postcode</label>
+              <input
+                onChange={(e) => setFdata({ ...fData, postcode: e.target.value })}
+                value={fData.postcode}
+                type="text"
+                id="postcode"
+                className="border px-4 py-2 w-full focus:outline-none"
+              />
+            </div>
+            <div className="flex flex-col space-y-2">
+              <label htmlFor="country">Country</label>
+              <input
+                onChange={(e) => setFdata({ ...fData, country: e.target.value })}
+                value={fData.country}
+                type="text"
+                id="country"
+                className="border px-4 py-2 w-full focus:outline-none"
+              />
+            </div>
+
             <div
               onClick={(e) => handleSubmit()}
               style={{ background: "#303031" }}

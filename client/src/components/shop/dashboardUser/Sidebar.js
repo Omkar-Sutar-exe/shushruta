@@ -77,6 +77,17 @@ const Sidebar = (props) => {
           >
             Setting
           </div>
+          <hr />
+          <div
+            onClick={(e) => history.push("/user/documents")}
+            className={`${
+              location.pathname === "/user/documents"
+                ? "border-r-4 border-yellow-700 bg-gray-200"
+                : ""
+            }  px-4 py-4 hover:bg-gray-200 cursor-pointer`}
+          >
+            Documents
+          </div>
           {/* Logout removed from sidebar per request */}
         </div>
       </div>

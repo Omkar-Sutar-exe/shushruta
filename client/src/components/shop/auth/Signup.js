@@ -6,6 +6,16 @@ const Signup = (props) => {
     name: "",
     email: "",
     phoneNumber: "",
+          street: "",
+          city: "",
+          state: "",
+          postcode: "",
+          country: "",
+    street: "",
+    city: "",
+    state: "",
+    postcode: "",
+    country: "",
     password: "",
     cPassword: "",
     userRole: 0, // 0 = Patient, 1 = Hospital/Procurement
@@ -34,6 +44,11 @@ const Signup = (props) => {
         name: data.name,
         email: data.email,
         phoneNumber: data.phoneNumber,
+        street: data.street,
+        city: data.city,
+        state: data.state,
+        postcode: data.postcode,
+        country: data.country,
         password: data.password,
         cPassword: data.cPassword,
         userRole: data.userRole,
@@ -153,6 +168,116 @@ const Signup = (props) => {
             } px-4 py-2 focus:outline-none border`}
           />
           {!data.error ? "" : alert(data.error.phoneNumber, "red")}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="street">
+            Street<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                street: e.target.value,
+              })
+            }
+            value={data.street}
+            type="text"
+            id="street"
+            className={`${
+              data.error.street ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.street, "red")}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="city">
+            City<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                city: e.target.value,
+              })
+            }
+            value={data.city}
+            type="text"
+            id="city"
+            className={`${
+              data.error.city ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.city, "red")}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="state">
+            State<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                state: e.target.value,
+              })
+            }
+            value={data.state}
+            type="text"
+            id="state"
+            className={`${
+              data.error.state ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.state, "red")}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="postcode">
+            Postcode<span className="text-sm text-gray-600 ml-1"></span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                postcode: e.target.value,
+              })
+            }
+            value={data.postcode}
+            type="text"
+            id="postcode"
+            className={`${
+              data.error.postcode ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.postcode, "red")}
+        </div>
+        <div className="flex flex-col">
+          <label htmlFor="country">
+            Country<span className="text-sm text-gray-600 ml-1">*</span>
+          </label>
+          <input
+            onChange={(e) =>
+              setData({
+                ...data,
+                success: false,
+                error: {},
+                country: e.target.value,
+              })
+            }
+            value={data.country}
+            type="text"
+            id="country"
+            className={`${
+              data.error.country ? "border-red-500" : ""
+            } px-4 py-2 focus:outline-none border`}
+          />
+          {!data.error ? "" : alert(data.error.country, "red")}
         </div>
         <div className="flex flex-col">
           <label htmlFor="password">

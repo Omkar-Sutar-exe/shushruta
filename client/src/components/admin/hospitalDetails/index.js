@@ -82,6 +82,10 @@ const HospitalDetailsComponent = () => {
               </h3>
               <div className="space-y-3">
                 <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Hospital ID:</span>
+                  <span className="text-gray-800">{hospitalInfo.hospitalId || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
                   <span className="font-medium text-gray-600">Hospital Name:</span>
                   <span className="text-gray-800">{hospitalInfo.name || "Not provided"}</span>
                 </div>
@@ -148,6 +152,47 @@ const HospitalDetailsComponent = () => {
                       </>
                     )}
                   </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Address Information */}
+            <div className="bg-gray-50 p-6 rounded-lg">
+              <h3 className="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                Address Information
+              </h3>
+              <div className="space-y-3">
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Street:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.street || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">City:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.city || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">State:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.state || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Postcode:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.postcode || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Country:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.country || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Latitude:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.latitude || "Not provided"}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="font-medium text-gray-600">Longitude:</span>
+                  <span className="text-gray-800">{hospitalInfo.address?.longitude || "Not provided"}</span>
                 </div>
               </div>
             </div>

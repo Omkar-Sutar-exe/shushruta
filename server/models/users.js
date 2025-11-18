@@ -27,6 +27,21 @@ const userSchema = new mongoose.Schema(
       enum: ["patient", "hospital", "superadmin"],
       default: "patient",
     },
+    hospitalId: {
+      type: String,
+      unique: true,
+      sparse: true, // Allows null values to not violate the unique constraint
+    },
+    hospitalInfo: {
+      name: { type: String },
+      street: { type: String },
+      city: { type: String },
+      state: { type: String },
+      postcode: { type: String },
+      country: { type: String },
+      latitude: { type: Number },
+      longitude: { type: Number },
+    },
     phoneNumber: {
       type: Number,
     },
@@ -50,6 +65,15 @@ const userSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    address: {
+      street: { type: String },
+      city: { type: String },
+      state: { type: String },
+      postcode: { type: String },
+      country: { type: String },
+      latitude: { type: Number },
+      longitude: { type: Number },
+    },
     userImage: {
       type: String,
       default: "user.png",
@@ -65,6 +89,14 @@ const userSchema = new mongoose.Schema(
     history: {
       type: Array,
       default: [],
+    },
+    aadharCardUploaded: {
+      type: Boolean,
+      default: false,
+    },
+    medicalReportUploaded: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }
