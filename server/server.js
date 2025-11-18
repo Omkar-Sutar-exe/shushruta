@@ -1,7 +1,5 @@
 
-
 const path = require("path");
-
 const express = require("express");
 const app = express();
 require("dotenv").config({ path: path.resolve(__dirname, "./.env") });
@@ -9,11 +7,9 @@ const mongoose = require("mongoose");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
 // Set global mongoose options to avoid deprecation warnings
 mongoose.set('useCreateIndex', true);
 mongoose.set('useFindAndModify', false);
-
 // Import Router
 const authRouter = require("./routes/auth");
 const categoryRouter = require("./routes/categories");
@@ -27,10 +23,8 @@ const mailRouter = require("./routes/mail");
 // Import Auth middleware for check user login or not~
 const { loginCheck } = require("./middleware/auth");
 const CreateAllFolder = require("./config/uploadFolderCreateScript");
-
 /* Create All Uploads Folder if not exists | For Uploading Images */
 CreateAllFolder();
-
 // Database Connection
 mongoose
   .connect(process.env.DATABASE || "mongodb://127.0.0.1:27017/Shushruta", {
@@ -72,7 +66,7 @@ app.use("/api/customize", customizeRouter);
 app.use('/api/mail', mailRouter);
 
 // Run Server
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 8001;
 app.listen(PORT, () => {
   console.log("Server is running on ", PORT);
 });

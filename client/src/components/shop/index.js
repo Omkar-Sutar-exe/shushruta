@@ -2,6 +2,7 @@ import Home from "./home";
 import WishList from "./wishlist";
 import ProtectedRoute from "./auth/ProtectedRoute";
 import AdminProtectedRoute from "./auth/AdminProtectedRoute";
+import SuperAdminProtectedRoute from "./auth/SuperAdminProtectedRoute";
 import CartProtectedRoute from "./auth/CartProtectedRoute";
 import { LayoutContext } from "./layout";
 import { layoutState, layoutReducer } from "./layout/layoutContext";
@@ -16,6 +17,7 @@ export {
   WishList,
   ProtectedRoute,
   AdminProtectedRoute,
+  SuperAdminProtectedRoute,
   CartProtectedRoute,
   LayoutContext,
   layoutState,

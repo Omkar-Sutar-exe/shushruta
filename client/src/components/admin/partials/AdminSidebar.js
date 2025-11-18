@@ -1,7 +1,9 @@
 import React, { Fragment } from "react";
 import { useLocation, useHistory } from "react-router-dom";
+import { isSuperAdmin } from "../../shop/auth/fetchApi";
 
 const AdminSidebar = (props) => {
+  const superAdmin = isSuperAdmin();
   const location = useLocation();
   const history = useHistory();
 
@@ -13,13 +15,12 @@ const AdminSidebar = (props) => {
         className="hidden md:block sticky top-0 left-0 h-screen md:w-3/12 lg:w-2/12 sidebarShadow bg-white text-gray-600"
       >
         <div
-          onClick={(e) => history.push("/admin/dashboard")}
+          onClick={(e) => history.push(superAdmin ? "/superadmin/dashboard" : "/admin/dashboard")}
           className={`${
-            location.pathname === "/admin/dashboard"
+            location.pathname === (superAdmin ? "/superadmin/dashboard" : "/admin/dashboard")
               ? "border-r-4 border-gray-800 bg-gray-100"
               : ""
-          } hover:bg-gray-200 cursor-pointer flex flex-col items-center justify-center py-6`}
-        >
+          } hover:bg-gray-200 cursor-pointer flex flex-col items-center justify-center py-6`}>
           <span>
             <svg
               className="w-8 h-8 text-gray-600 hover:text-gray-800"
@@ -38,15 +39,16 @@ const AdminSidebar = (props) => {
           </span>
           <span className="hover:text-gray-800">Dashboard</span>
         </div>
+        {superAdmin && (
+        <>
         <hr className="border-b border-gray-200" />
         <div
-          onClick={(e) => history.push("/admin/dashboard/categories")}
+          onClick={(e) => history.push("/superadmin/dashboard/categories")}
           className={`${
-            location.pathname === "/admin/dashboard/categories"
+            location.pathname === "/superadmin/dashboard/categories"
               ? "border-r-4 border-gray-800 bg-gray-100"
               : ""
-          } hover:bg-gray-200 cursor-pointer flex flex-col items-center justify-center py-6`}
-        >
+          } hover:bg-gray-200 cursor-pointer flex flex-col items-center justify-center py-6`}>
           <span>
             <svg
               className="w-8 h-8 text-gray-600 hover:text-gray-800"
@@ -65,6 +67,37 @@ const AdminSidebar = (props) => {
           </span>
           <span className="hover:text-gray-800">Categories</span>
         </div>
+        
+        <hr className="border-b border-gray-200" />
+        <div
+          onClick={(e) => history.push("/superadmin/dashboard/requests")}
+          className={`${
+            location.pathname === "/superadmin/dashboard/requests"
+              ? "border-r-4 border-gray-800 bg-gray-100"
+              : ""
+          } hover:bg-gray-200 cursor-pointer flex flex-col items-center justify-center py-6`}>
+          <span>
+            <svg
+              className="w-8 h-8 text-gray-600 hover:text-gray-800"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"
+              />
+            </svg>
+          </span>
+          <span className="hover:text-gray-800">Requests</span>
+        </div>
+        </>
+        ) } 
+        {!superAdmin && (
+        <>
         <hr className="border-b border-gray-200" />
         <div
           onClick={(e) => history.push("/admin/dashboard/products")}
@@ -92,6 +125,10 @@ const AdminSidebar = (props) => {
           </span>
           <span className="hover:text-gray-800">Organ</span>
         </div>
+        </>
+        ) }
+        {!superAdmin && (
+        <>
         <hr className="border-b border-gray-200" />
         <div
           onClick={(e) => history.push("/admin/dashboard/orders")}
@@ -119,6 +156,10 @@ const AdminSidebar = (props) => {
           </span>
           <span className="hover:text-gray-800">Request</span>
         </div>
+        </>
+        ) }
+        {!superAdmin && (
+        <>
         <hr className="border-b border-gray-200" />
         <div
           onClick={(e) => history.push("/admin/dashboard/hospital-details")}
@@ -146,6 +187,8 @@ const AdminSidebar = (props) => {
           </span>
           <span className="hover:text-gray-800">Hospital Details</span>
         </div>
+        </>
+        ) }
       </div>
     </Fragment>
   );

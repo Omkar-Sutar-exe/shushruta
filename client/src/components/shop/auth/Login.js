@@ -38,7 +38,9 @@ const Login = (props) => {
         localStorage.setItem("jwt", JSON.stringify(responseData));
         // Redirect based on role: 1 = admin/hospital, 0 = patient
         const role = responseData?.user?.role;
-        if (role === 1) {
+        if (role === 2) {
+          window.location.href = "/superadmin/dashboard";
+        } else if (role === 1) {
           window.location.href = "/admin/dashboard";
         } else {
           window.location.href = "/user/profile";

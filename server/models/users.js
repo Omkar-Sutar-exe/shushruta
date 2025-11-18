@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema(
     },
     userType: {
       type: String, // "patient" or "hospital"
-      enum: ["patient", "hospital"],
+      enum: ["patient", "hospital", "superadmin"],
       default: "patient",
     },
     phoneNumber: {

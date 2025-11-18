@@ -43,6 +43,7 @@ class Auth {
       return res.json({ error });
     } else {
       if (validateEmail(email)) {
+        
         name = toTitleCase(name);
         if ((password.length > 255) | (password.length < 8)) {
           error = {
@@ -67,7 +68,7 @@ class Auth {
               return res.json({ error });
             } else {
               // Determine role: 0 = patient/customer, 1 = admin/procurement (existing)
-              const resolvedRole = userRole === 0 || userRole === "0" ? 0 : 1;
+              const resolvedRole = userRole === 2 || userRole === "2" ? 2 : (userRole === 0 || userRole === "0" ? 0 : 1);
               const resolvedType = resolvedRole === 0 ? "patient" : "hospital";
               let newUser = new userModel({
                 name,

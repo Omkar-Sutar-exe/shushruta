@@ -4,13 +4,17 @@ import {
   WishList,
   ProtectedRoute,
   AdminProtectedRoute,
+  SuperAdminProtectedRoute,
   CartProtectedRoute,
   PageNotFound,
   ProductDetails,
   ProductByCategory,
   CheckoutPage,
 } from "./shop";
-import { DashboardAdmin, Categories, Products, Orders, HospitalDetails, EditProfile } from "./admin";
+import { DashboardAdmin, Products, Orders, HospitalDetails, EditProfile } from "./admin";
+import SuperAdminPage from "./superadmin/superAdminDashboard";
+import SuperAdminCategories from "./superadmin/categories";
+import SuperAdminRequests from "./superadmin/requests";
 import { UserProfile, UserOrders, SettingUser, PhoneVerify } from "./shop/dashboardUser";
 import ResetPassword from "./shop/auth/ResetPassword";
 
@@ -44,11 +48,7 @@ const Routes = (props) => {
           path="/admin/dashboard"
           component={DashboardAdmin}
         />
-        <AdminProtectedRoute
-          exact={true}
-          path="/admin/dashboard/categories"
-          component={Categories}
-        />
+        
         <AdminProtectedRoute
           exact={true}
           path="/admin/dashboard/products"
@@ -70,6 +70,28 @@ const Routes = (props) => {
           component={EditProfile}
         />
         {/* Admin Routes End */}
+
+        {/* SuperAdmin Route */}
+        <SuperAdminProtectedRoute
+          exact={true}
+          path="/superadmin/dashboard"
+          component={SuperAdminPage}
+        />
+        <SuperAdminProtectedRoute
+          exact={true}
+          path="/superadmin/dashboard/categories"
+          component={SuperAdminCategories}
+        />
+        <SuperAdminProtectedRoute
+          exact={true}
+          path="/superadmin/dashboard/requests"
+          component={SuperAdminRequests}
+        />
+        <SuperAdminProtectedRoute
+          exact={true}
+          path="/superadmin/dashboard/orders"
+          component={Orders}
+        />
 
         {/* User Dashboard */}
         <ProtectedRoute
