@@ -1,7 +1,9 @@
 import React, { Fragment, useEffect, useState } from "react";
+import moment from "moment";
 import { useHistory, useParams } from "react-router-dom";
 import Layout from "../layout";
 import { productByCategory } from "../../admin/products/FetchApi";
+import Countdown from "./Countdown";
 
 const apiURL = process.env.REACT_APP_API_URL;
 
@@ -65,8 +67,9 @@ const AllProduct = ({ products }) => {
                   />
                   <div className="flex items-center justify-between mt-2">
                     <div className="text-gray-600 font-light truncate">
-                      {item.pDescription}
+                      {item.pTimeWindowHours} hrs
                     </div>
+                    <Countdown expiryAt={item.expiryAt} />
                     <div className="flex items-center space-x-1">
                       {/* <span>
                         <svg
@@ -89,7 +92,7 @@ const AllProduct = ({ products }) => {
                       </span> */}
                     </div>
                   </div>
-                  <div>PIN Code: {item.pPrice}</div>
+
                   {/* <div className="absolute top-0 right-0 mx-2 my-2 md:mx-4">
                     <svg
                       className="w-5 h-5 md:w-6 md:h-6 cursor-pointer text-yellow-700"

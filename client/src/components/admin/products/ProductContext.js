@@ -10,7 +10,6 @@ export const productState = {
     pStatus: "",
     pCategory: "",
     pQuantity: "",
-    pPrice: "",
     pOffer: "",
   },
 };
@@ -42,7 +41,6 @@ export const productReducer = (state, action) => {
           pStatus: action.product.pStatus,
           pCategory: action.product.pCategory,
           pQuantity: action.product.pQuantity,
-          pPrice: action.product.pPrice,
           pOffer: action.product.pOffer,
         },
       };
@@ -58,7 +56,6 @@ export const productReducer = (state, action) => {
           pStatus: "",
           pCategory: "",
           pQuantity: "",
-          pPrice: "",
           pOffer: "",
         },
       };

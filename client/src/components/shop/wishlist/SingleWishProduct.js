@@ -1,4 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
+import moment from "moment";
+import Countdown from "../home/Countdown";
 import { useHistory } from "react-router-dom";
 import { wishListProducts } from "./FetchApi";
 const apiURL = process.env.REACT_APP_API_URL;
@@ -60,12 +62,13 @@ const Product = () => {
                     alt="wishListproduct"
                   />
                   <div className="text-lg md:ml-6 truncate">
-                    {product.pName}
+                    {product.pTimeWindowHours} hrs
                   </div>
+                  <Countdown expiryAt={product.expiryAt} />
                 </div>
                 <div className="md:w-1/2 md:flex md:items-center md:justify-around">
                   <div className="font-semibold text-gray-600">
-                    ${product.pPrice}.00
+
                   </div>
                   {product.pQuantity > 0 ? (
                     <div className="text-green-500 my-1 md:my-0">Available</div>

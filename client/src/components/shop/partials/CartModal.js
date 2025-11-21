@@ -122,7 +122,7 @@ const CartModal = () => {
                               <span className="text-sm text-gray-400">
                                 
                               </span>{" "}
-                              PIN Code: {(item._id, item.pPrice)}
+                              PIN Code: {item._id}
                             </div>{" "}
                             {/* SUbtotal Count */}
                           </div>

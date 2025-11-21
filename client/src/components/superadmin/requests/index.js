@@ -74,7 +74,7 @@ const SuperAdminRequestsComponent = () => {
                           src={`${apiURL}/uploads/products/${product?.id?.pImages?.[0] || "default.png"}`}
                           alt="productImage"
                         />
-                        <span>{product?.id?.pPrice || "N/A"}</span>
+
                       </span>
                     ))}
                   </td>

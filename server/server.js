@@ -8,8 +8,8 @@ const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 // Set global mongoose options to avoid deprecation warnings
-mongoose.set('useCreateIndex', true);
-mongoose.set('useFindAndModify', false);
+
+
 // Import Router
 const authRouter = require("./routes/auth");
 const categoryRouter = require("./routes/categories");
@@ -20,6 +20,7 @@ const orderRouter = require("./routes/orders");
 const usersRouter = require("./routes/users");
 const customizeRouter = require("./routes/customize");
 const mailRouter = require("./routes/mail");
+const similarityRouter = require("./routes/similarity");
 const adminRouter = require("./routes/admin");
 // Import Auth middleware for check user login or not~
 const { loginCheck } = require("./middleware/auth");
@@ -33,9 +34,7 @@ mongoose
     useUnifiedTopology: true,
     serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
     socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
-    bufferMaxEntries: 0, // Disable mongoose buffering
-    bufferCommands: false, // Disable mongoose buffering
-    useCreateIndex: true, // Use createIndex instead of deprecated ensureIndex
+    bufferCommands: false // Disable mongoose command buffering
   })
   .then(() =>
     console.log(
@@ -54,7 +53,6 @@ app.use(cors());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
-app.use(require('express-fileupload')({ useTempFiles: true }));
 
 // Routes
 app.use("/api", authRouter);
@@ -68,9 +66,10 @@ app.use("/api/customize", customizeRouter);
 app.use('/api/mail', mailRouter);
 
 app.use("/api/admin", adminRouter);
+app.use("/api/similarity", similarityRouter);
 
 // Run Server
-const PORT = process.env.PORT || 8001;
+const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {
   console.log("Server is running on ", PORT);
 });

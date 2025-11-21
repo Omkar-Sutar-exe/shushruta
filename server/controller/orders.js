@@ -2,13 +2,16 @@ const orderModel = require("../models/orders");
 const productModel = require("../models/products");
 const userModel = require("../models/users");
 const { sendMail } = require("../config/mailer");
+const { Blockchain, BlockchainManager } = require("../blockchain/blockchain");
+
+const blockchainManager = new BlockchainManager();
 
 class Order {
   async getAllOrders(req, res) {
     try {
       let Orders = await orderModel
         .find({})
-        .populate("allProduct.id", "pName pImages pPrice")
+        .populate("allProduct.id", "pName pImages")
         .populate("user", "name email")
         .sort({ _id: -1 });
       if (Orders) {
@@ -27,7 +30,7 @@ class Order {
       try {
         let Order = await orderModel
           .find({ user: uId })
-          .populate("allProduct.id", "pName pImages pPrice")
+          .populate("allProduct.id", "pName pImages")
           .populate("user", "name email")
           .sort({ _id: -1 });
         if (Order) {
@@ -100,11 +103,51 @@ class Order {
                 productDetails.push({
                   name: prod.pName,
                   quantity: p.quantity || p.quantitiy || 1,
-                  price: prod.pPrice,
-                  description: prod.pDescription
+                  description: prod.pDescription,
+                  category: prod.pCategory,
+                  medicalReport: prod.pMedicalReport,
+                  timeWindowHours: prod.pTimeWindowHours,
+                  expiryAt: prod.expiryAt,
+                  status: prod.pStatus,
                 });
               }
             }
+
+            // Create blockchain data
+            const blockData = {
+              orderId: save._id,
+              transactionId: transactionId,
+              receiver: {
+                id: patient._id,
+                name: patient.name,
+                email: patient.email,
+                phone: patient.phoneNumber,
+                address: address,
+              },
+              hospital: {
+                name: hname,
+                email: hemail,
+                phone: hphone,
+              },
+              organ: productDetails,
+              timestamp: new Date().toISOString(),
+            };
+
+            // Determine the organ category (assuming all products in an order belong to the same category for simplicity)
+            const organCategory = productDetails.length > 0 ? productDetails[0].category : "unknown";
+
+            // Add new block to the category-specific blockchain
+            blockchainManager.addBlockToCategory(organCategory, blockData);
+            console.log(`New block added to the ${organCategory} blockchain.`);
+            console.log(`${organCategory} blockchain valid?`, blockchainManager.isCategoryChainValid(organCategory));
+
+            // Retrieve the hash of the newly added block
+            const latestBlock = blockchainManager.getChain(organCategory).getLatestBlock();
+            const blockHash = latestBlock.hash;
+
+            // Update the saved order with the blockHash
+            await orderModel.findByIdAndUpdate(save._id, { blockHash: blockHash });
+            console.log(`Order ${save._id} updated with blockHash: ${blockHash}`);
 
             // ===== SEND EMAIL TO HOSPITAL =====
             if (hname && hemail) {
@@ -270,7 +313,7 @@ class Order {
                   <tr>
                     <th>Organ Name</th>
                     <th>Quantity</th>
-                    <th>Price</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -278,7 +321,7 @@ class Order {
                     <tr>
                       <td>${p.name}</td>
                       <td>${p.quantity}</td>
-                      <td>₹${p.price}</td>
+                      <td></td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -379,7 +422,7 @@ class Order {
                   <tr>
                     <th>Organ Name</th>
                     <th>Quantity</th>
-                    <th>Price</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -387,7 +430,7 @@ class Order {
                     <tr>
                       <td>${p.name}</td>
                       <td>${p.quantity}</td>
-                      <td>₹${p.price}</td>
+                      <td></td>
                     </tr>
                   `).join('')}
                 </tbody>

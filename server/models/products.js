@@ -3,18 +3,15 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const productSchema = new mongoose.Schema(
   {
-    pName: {
-      type: String,
+    pTimeWindowHours: {
+      type: Number,
       required: true,
     },
     pDescription: {
       type: String,
       required: true,
     },
-    pPrice: {
-      type: Number,
-      required: true,
-    },
+
     pSold: {
       type: Number,
       default: 0,
@@ -67,6 +64,26 @@ const productSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    hospitalAddress: {
+      type: String,
+    },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
+    },
+    pMedicalReport: {
+      type: String,
+    },
+    expiryAt: {
+      type: Date,
+      required: true,
+    },
+    isExpired: {
+      type: Boolean,
+      default: false,
+    }
   },
   { timestamps: true }
 );

@@ -131,14 +131,14 @@ const ProductTable = ({ product, deleteProduct, editProduct }) => {
             const currentTime = moment();
             if (expirationDate.isBefore(currentTime)) {
   // Display message indicating that the expiration time has passed
-  console.log('Organ Expired');
+
   product.pStatus = "Disabled";
 } else {
   // Display the expiration time
  
   const expirationTimeString = moment(expirationDate).format('YYYY-MM-DD HH:mm:ss');
 
-  console.log(`Your order will expire on ${expirationTimeString}.`);
+
 }
 
             
@@ -148,9 +148,7 @@ const ProductTable = ({ product, deleteProduct, editProduct }) => {
     <Fragment>
       <tr>
         <td className="p-2 text-left">
-          {/* {product.pPrice.length > 15
-            ? product.pDescription.substring(1, 15) + "..."
-            : product.pPrice} */}
+      
              {expirationTimeString}
         </td>
         <td className="p-2 text-left">

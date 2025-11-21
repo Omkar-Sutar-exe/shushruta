@@ -182,9 +182,7 @@
                           "pDescription": {
                             "type": "string"
                           },
-                          "pPrice": {
-                            "type": "number"
-                          },
+
                           "pCategory": {
                             "type": "string"
                           },

@@ -34,6 +34,7 @@ const userSchema = new mongoose.Schema(
     },
     hospitalInfo: {
       name: { type: String },
+      hospitalAddress: { type: String },
       street: { type: String },
       city: { type: String },
       state: { type: String },
@@ -97,6 +98,9 @@ const userSchema = new mongoose.Schema(
     medicalReportUploaded: {
       type: Boolean,
       default: false,
+    },
+    medicalReportContent: {
+      type: String,
     },
   },
   { timestamps: true }

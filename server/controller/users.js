@@ -29,7 +29,7 @@ class User {
     try {
       let Users = await userModel
         .find({})
-        .populate("allProduct.id", "pName pImages pPrice")
+        .populate("allProduct.id", "pName pImages")
         .populate("user", "name email")
         .sort({ _id: -1 });
       if (Users) {

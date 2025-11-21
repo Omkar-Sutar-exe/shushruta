@@ -13,43 +13,56 @@ export const getAllProduct = async () => {
 export const createPorductImage = async ({ pImage }) => {
   /* Most important part for uploading multiple image  */
   let formData = new FormData();
-  for (const file of pImage) {
-    formData.append("pImage", file);
+  if (pImage && pImage.length > 0) {
+    for (const file of pImage) {
+      formData.append("pImage", file);
+    }
   }
   /* Most important part for uploading multiple image  */
 };
 
-export const createProduct = async ({
-  pName,
-  pDescription,
-  pImage,
-  pStatus,
-  pCategory,
-  pQuantity,
-  pPrice,
-  pOffer,
-  user,
-}) => {
-  /* Most important part for uploading multiple image  */
-  let formData = new FormData();
-  for (const file of pImage) {
-    formData.append("pImage", file);
+export const createProduct = async (data) => {
+  // If the caller already provided a FormData instance (as AddProductModal does),
+  // send it directly. Otherwise, build FormData from the plain object.
+  let formData;
+
+  if (data instanceof FormData) {
+    formData = data;
+  } else {
+    const {
+      pName,
+      pDescription,
+      pImage = [],
+      pStatus,
+      pCategory,
+      pQuantity,
+      pOffer,
+      user,
+    } = data;
+
+    formData = new FormData();
+
+    if (Array.isArray(pImage) && pImage.length > 0) {
+      for (const file of pImage) {
+        formData.append("pImage", file);
+      }
+    }
+
+    formData.append("pName", pName);
+    formData.append("pDescription", pDescription);
+    formData.append("pStatus", pStatus);
+    formData.append("pCategory", pCategory);
+    formData.append("pQuantity", pQuantity);
+    formData.append("pOffer", pOffer);
+    formData.append("user", user);
   }
-  /* Most important part for uploading multiple image  */
-  formData.append("pName", pName);
-  formData.append("pDescription", pDescription);
-  formData.append("pStatus", pStatus);
-  formData.append("pCategory", pCategory);
-  formData.append("pQuantity", pQuantity);
-  formData.append("pPrice", pPrice);
-  formData.append("pOffer", pOffer);
-  formData.append("user", user);
 
   try {
-    let res = await axios.post(`${apiURL}/api/product/add-product`, formData);
+    const res = await axios.post(`${apiURL}/api/product/add-product`, formData);
     return res.data;
   } catch (error) {
-    console.log(error);
+    console.error("Error in createProduct API call:", error);
+    return { error: "Failed to create product" };
   }
 };
 
@@ -69,7 +82,6 @@ export const editProduct = async (product) => {
   formData.append("pStatus", product.pStatus);
   formData.append("pCategory", product.pCategory._id);
   formData.append("pQuantity", product.pQuantity);
-  formData.append("pPrice", product.pPrice);
   formData.append("pOffer", product.pOffer);
   formData.append("pImages", product.pImages);
 
@@ -94,17 +106,6 @@ export const productByCategory = async (catId) => {
   try {
     let res = await axios.post(`${apiURL}/api/product/product-by-category`, {
       catId,
-    });
-    return res.data;
-  } catch (error) {
-    console.log(error);
-  }
-};
-
-export const productByPrice = async (price) => {
-  try {
-    let res = await axios.post(`${apiURL}/api/product/product-by-price`, {
-      price,
     });
     return res.data;
   } catch (error) {

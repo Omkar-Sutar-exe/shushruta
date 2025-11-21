@@ -166,14 +166,12 @@ const CheckoutProducts = ({ products }) => {
                   <div className="text-lg md:ml-6 truncate">
                     {product.pDescription}
                   </div>
-                  {/* <div className="md:ml-6 font-semibold text-gray-600 text-sm">
-                    PIN Code: {product.pPrice}{" "}
-                  </div> */}
+                  
                   <div className="md:ml-6 font-semibold text-gray-600 text-sm">
                     Units : {quantity(product._id)}
                   </div>
                   <div className="font-semibold text-gray-600 text-sm">
-                  PIN Code: {subTotal(product._id, product.pPrice)}
+                  PIN Code: {subTotal(product._id)}
                   </div>
                 </div>
               </div>

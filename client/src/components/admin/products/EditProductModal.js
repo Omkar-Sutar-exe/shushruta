@@ -22,7 +22,6 @@ const EditProductModal = (props) => {
     pStatus: "",
     pCategory: "",
     pQuantity: "",
-    pPrice: "",
     pOffer: "",
     error: false,
     success: false,
@@ -55,7 +54,7 @@ const EditProductModal = (props) => {
       pStatus: data.editProductModal.pStatus,
       pCategory: data.editProductModal.pCategory,
       pQuantity: data.editProductModal.pQuantity,
-      pPrice: data.editProductModal.pPrice,
+      
       pOffer: data.editProductModal.pOffer,
     });
   }, [data.editProductModal]);
@@ -173,18 +172,18 @@ const EditProductModal = (props) => {
               <div className="w-1/2 flex flex-col space-y-1 space-x-1">
                 <label htmlFor="price">PIN Code *</label>
                 <input
-                  value={editformData.pPrice}
+                  value={editformData.pOffer}
                   onChange={(e) =>
                     setEditformdata({
                       ...editformData,
                       error: false,
                       success: false,
-                      pPrice: e.target.value,
+                      pOffer: e.target.value,
                     })
                   }
                   type="number"
                   className="px-4 py-2 border focus:outline-none"
-                  id="price"
+                  id="offer"
                 />
               </div>
             </div>

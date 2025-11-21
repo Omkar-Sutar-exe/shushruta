@@ -21,6 +21,7 @@ const HospitalDetailsComponent = () => {
         if (currentUser && currentUser.user && currentUser.user._id) {
           const response = await getUserById(currentUser.user._id);
           if (response && response.User) {
+            console.log("Response User:", response.User);
             setHospitalInfo(response.User);
             setError(null);
           } else if (response && response.error) {
@@ -97,10 +98,7 @@ const HospitalDetailsComponent = () => {
                   <span className="font-medium text-gray-600">Phone Number:</span>
                   <span className="text-gray-800">{hospitalInfo.phoneNumber || "Not provided"}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="font-medium text-gray-600">User Type:</span>
-                  <span className="text-gray-800 capitalize">{hospitalInfo.userType || "Not provided"}</span>
-                </div>
+
               </div>
             </div>
 

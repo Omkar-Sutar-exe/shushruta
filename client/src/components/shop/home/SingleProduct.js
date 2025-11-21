@@ -75,7 +75,7 @@ const SingleProduct = (props) => {
                   <div className="text-gray-600 font-light truncate">{item.pName}</div>
                   <div className="flex items-center space-x-1"></div>
                 </div>
-                <div>PIN Code: {item.pPrice}</div>
+
               </div>
             </Fragment>
           );

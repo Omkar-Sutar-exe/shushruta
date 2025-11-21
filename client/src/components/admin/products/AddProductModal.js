@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useState, useEffect } from "react";
 import { ProductContext } from "./index";
 import { createProduct, getAllProduct } from "./FetchApi";
 import { getAllCategory } from "../categories/FetchApi";
+import { getUserById } from "../hospitalDetails/FetchApi";
 
 const AddProductDetail = ({ categories }) => {
   const { data, dispatch } = useContext(ProductContext);
@@ -12,317 +13,280 @@ const AddProductDetail = ({ categories }) => {
 
   const [fData, setFdata] = useState({
     pName: "",
+    pTimeWindowHours: "",
     pDescription: "",
     pStatus: "Active",
-    pImage: null, // Initial value will be null or empty array
+    pImage: [],
     pCategory: "",
-    pPrice: "",
+
     pOffer: 0,
-    pQuantity: "",
+    pHospitalId: "",
+    pQuantity: 0,
+    pMedicalReport: null,
     success: false,
     error: false,
   });
 
-  const fetchData = async () => {
-    let responseData = await getAllProduct();
-    setTimeout(() => {
-      if (responseData && responseData.Products) {
-        dispatch({
-          type: "fetchProductsAndChangeState",
-          payload: responseData.Products,
-        });
+  useEffect(() => {
+    const fetchHospitalId = async () => {
+      const currentUser = JSON.parse(localStorage.getItem("jwt"));
+      if (currentUser && currentUser.user && currentUser.user._id) {
+        const response = await getUserById(currentUser.user._id);
+        if (response && response.User && response.User.hospitalId) {
+          setFdata(prev => ({ ...prev, pHospitalId: response.User.hospitalId }));
+        }
       }
-    }, 1000);
-  };
+    };
+    fetchHospitalId();
+  }, []);
 
   const submitForm = async (e) => {
     e.preventDefault();
-    e.target.reset();
+    e.persist();
 
-    if (!fData.pImage) {
-      setFdata({ ...fData, error: "Please upload at least 2 image" });
+    if (fData.pImage.length < 1) {
+      setFdata({ ...fData, error: "Please upload at least 1 image" });
       setTimeout(() => {
         setFdata({ ...fData, error: false });
       }, 2000);
+      return;
+    }
+
+    console.log("fData before API call:", fData);
+    const formData = new FormData();
+    formData.append("pName", fData.pName);
+    formData.append("pTimeWindowHours", fData.pTimeWindowHours);
+    formData.append("pDescription", fData.pDescription);
+    formData.append("pStatus", fData.pStatus);
+    formData.append("pCategory", fData.pCategory);
+    formData.append("pHospitalId", fData.pHospitalId);
+    formData.append("pOffer", parseInt(fData.pOffer));
+    formData.append("pQuantity", parseInt(fData.pQuantity));
+
+    if (fData.pMedicalReport) {
+      formData.append("pMedicalReport", fData.pMedicalReport);
+    }
+
+    for (const img of fData.pImage) {
+      formData.append("pImage", img);
     }
 
     try {
-      // Get current user ID from localStorage
       const currentUser = JSON.parse(localStorage.getItem("jwt"));
-      const userData = {
-        ...fData,
-        user: currentUser ? currentUser.user._id : null
-      };
-      
-      let responseData = await createProduct(userData);
+      formData.append("user", currentUser ? currentUser.user._id : null);
+      console.log("formData before API call:", Object.fromEntries(formData.entries()));
+
+      let responseData = await createProduct(formData);
+      console.log("API Response Data:", responseData);
+
       if (responseData.success) {
-        fetchData();
+        e.target.reset();
+
         setFdata({
-          ...fData,
-          pName: "",
+          pTimeWindowHours: "",
           pDescription: "",
-          pImage: "",
+          pImage: [],
           pStatus: "Active",
           pCategory: "",
-          pPrice: "",
+          pHospitalId: "",
           pQuantity: "",
           pOffer: 0,
+          pMedicalReport: null,
           success: responseData.success,
           error: false,
         });
+
         setTimeout(() => {
           setFdata({
             ...fData,
-            pName: "",
-            pDescription: "",
-            pImage: "",
-            pStatus: "Active",
-            pCategory: "",
-            pPrice: "",
-            pQuantity: "",
-            pOffer: 0,
             success: false,
             error: false,
           });
+          dispatch({ type: "addProductModal", payload: false });
         }, 2000);
-      } else if (responseData.error) {
-        setFdata({ ...fData, success: false, error: responseData.error });
+      } else {
+        setFdata({ ...fData, error: responseData.error });
         setTimeout(() => {
-          return setFdata({ ...fData, error: false, success: false });
+          setFdata({ ...fData, error: false });
         }, 2000);
       }
-    } catch (error) {
-      console.log(error);
+    } catch (err) {
+      console.error("Error in submitForm:", err);
     }
   };
 
   return (
     <Fragment>
-      {/* Black Overlay */}
+      {/* Overlay */}
       <div
-        onClick={(e) => dispatch({ type: "addProductModal", payload: false })}
+        onClick={() => dispatch({ type: "addProductModal", payload: false })}
         className={`${
           data.addProductModal ? "" : "hidden"
         } fixed top-0 left-0 z-30 w-full h-full bg-black opacity-50`}
       />
-      {/* End Black Overlay */}
 
-      {/* Modal Start */}
+      {/* Modal */}
       <div
         className={`${
           data.addProductModal ? "" : "hidden"
-        } fixed inset-0 flex items-center z-30 justify-center overflow-auto`}
+        } fixed inset-0 flex items-center justify-center z-40`}
       >
-        <div className="mt-32 md:mt-0 relative bg-white w-11/12 md:w-3/6 shadow-lg flex flex-col items-center space-y-4 px-4 py-4 md:px-8">
-          <div className="flex items-center justify-between w-full pt-4">
-            <span className="text-left font-semibold text-2xl tracking-wider">
-              Add Organ
-            </span>
-            {/* Close Modal */}
+        <div className="mt-28 md:mt-0 relative bg-white w-11/12 md:w-3/6 shadow-lg flex flex-col px-6 py-6 space-y-4">
+
+          {/* Header */}
+          <div className="flex justify-between w-full">
+            <span className="font-semibold text-2xl">Add Organ</span>
+
             <span
-              style={{ background: "#303031" }}
-              onClick={(e) =>
-                dispatch({ type: "addProductModal", payload: false })
-              }
-              className="cursor-pointer text-gray-100 py-2 px-2 rounded-full"
+              onClick={() => dispatch({ type: "addProductModal", payload: false })}
+              className="cursor-pointer bg-gray-800 text-white p-2 rounded-full"
             >
-              <svg
-                className="w-6 h-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              ✕
             </span>
           </div>
-          {fData.error ? alert(fData.error, "red") : ""}
-          {fData.success ? alert(fData.success, "green") : ""}
-          <form className="w-full" onSubmit={(e) => submitForm(e)}>
-            <div className="flex space-x-1 py-4">
-              <div className="w-1/2 flex flex-col space-y-1 space-x-1">
-                <label htmlFor="name">Time Window *</label>
+
+          {fData.error && alert(fData.error, "red")}
+          {fData.success && alert(fData.success, "green")}
+
+          {/* FORM */}
+          <form className="w-full" onSubmit={submitForm}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+              {/* Organ Name */}
+              <div className="flex flex-col">
+                <label>Organ Name *</label>
                 <input
+                  type="text"
+                  className="px-4 py-2 border"
                   value={fData.pName}
                   onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pName: e.target.value,
-                    })
+                    setFdata({ ...fData, pName: e.target.value })
                   }
-                  className="px-4 py-2 border focus:outline-none"
-                  type="text"
                 />
               </div>
-              <div className="w-1/2 flex flex-col space-y-1 space-x-1">
-                <label htmlFor="price">PIN Code *</label>
+
+              {/* Time Window */}
+              <div className="flex flex-col">
+                <label>Time Window *</label>
+                <div className="flex">
+                  <input
+                    type="number"
+                    className="px-4 py-2 border w-full"
+                    value={fData.pTimeWindowHours}
+                    onChange={(e) =>
+                      setFdata({ ...fData, pTimeWindowHours: e.target.value })
+                    }
+                  />
+                  <span className="ml-2">hrs</span>
+                </div>
+              </div>
+
+              {/* Hospital ID */}
+              <div className="flex flex-col">
+                <label>Hospital ID *</label>
                 <input
-                  value={fData.pPrice}
-                  onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pPrice: e.target.value,
-                    })
-                  }
-                  type="number"
-                  className="px-4 py-2 border focus:outline-none"
-                  id="price"
+                  type="text"
+                  className="px-4 py-2 border bg-gray-100"
+                  value={fData.pHospitalId}
+                  readOnly
                 />
               </div>
-            </div>
-            <div className="flex flex-col space-y-2">
-              <label htmlFor="description">Organ Description *</label>
-              <textarea
-                value={fData.pDescription}
-                onChange={(e) =>
-                  setFdata({
-                    ...fData,
-                    error: false,
-                    success: false,
-                    pDescription: e.target.value,
-                  })
-                }
-                className="px-4 py-2 border focus:outline-none"
-                name="description"
-                id="description"
-                cols={5}
-                rows={2}
-              />
-            </div>
-            {/* Most Important part for uploading multiple image */}
-            <div className="flex flex-col mt-4">
-              <label htmlFor="image">Organ Images *</label>
-              <span className="text-gray-600 text-xs">Must need 2 images</span>
-              <input
-                onChange={(e) =>
-                  setFdata({
-                    ...fData,
-                    error: false,
-                    success: false,
-                    pImage: [...e.target.files],
-                  })
-                }
-                type="file"
-                accept=".jpg, .jpeg, .png"
-                className="px-4 py-2 border focus:outline-none"
-                id="image"
-                multiple
-              />
-            </div>
-            {/* Most Important part for uploading multiple image */}
-            <div className="flex space-x-1 py-4">
-              <div className="w-1/2 flex flex-col space-y-1">
-                <label htmlFor="status">Organ Status *</label>
+
+              {/* Description */}
+              <div className="flex flex-col md:col-span-2">
+                <label>Organ Description *</label>
+                <textarea
+                  rows="3"
+                  className="px-4 py-2 border"
+                  value={fData.pDescription}
+                  onChange={(e) =>
+                    setFdata({ ...fData, pDescription: e.target.value })
+                  }
+                ></textarea>
+              </div>
+
+              {/* Organ Images */}
+              <div className="flex flex-col md:col-span-2">
+                <label>Organ Images *</label>
+                <span className="text-xs text-gray-500">Upload at least 1 image</span>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  className="px-4 py-2 border"
+                  onChange={(e) =>
+                    setFdata({ ...fData, pImage: [...e.target.files] })
+                  }
+                />
+              </div>
+
+              {/* Medical Report */}
+              <div className="flex flex-col md:col-span-2">
+                <label>Medical Report</label>
+                <input
+                  type="file"
+                  accept=".pdf,.jpg,.png,.doc,.docx"
+                  className="px-4 py-2 border"
+                  onChange={(e) =>
+                    setFdata({ ...fData, pMedicalReport: e.target.files[0] })
+                  }
+                />
+              </div>
+
+              {/* Status */}
+              <div className="flex flex-col">
+                <label>Status *</label>
                 <select
+                  className="px-4 py-2 border"
                   value={fData.pStatus}
                   onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pStatus: e.target.value,
-                    })
+                    setFdata({ ...fData, pStatus: e.target.value })
                   }
-                  name="status"
-                  className="px-4 py-2 border focus:outline-none"
-                  id="status"
                 >
-                  <option name="status" value="Active">
-                    Active
-                  </option>
-                  <option name="status" value="Disabled">
-                    Disabled
-                  </option>
+                  <option value="Active">Active</option>
+                  <option value="Disabled">Disabled</option>
                 </select>
               </div>
-              <div className="w-1/2 flex flex-col space-y-1">
-                <label htmlFor="status">Organ Category *</label>
+
+              {/* Category */}
+              <div className="flex flex-col">
+                <label>Organ Category *</label>
                 <select
+                  className="px-4 py-2 border"
                   value={fData.pCategory}
                   onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pCategory: e.target.value,
-                    })
+                    setFdata({ ...fData, pCategory: e.target.value })
                   }
-                  name="status"
-                  className="px-4 py-2 border focus:outline-none"
-                  id="status"
                 >
-                  <option disabled value="">
-                    Select a category
-                  </option>
-                  {categories.length > 0
-                    ? categories.map(function (elem) {
-                        return (
-                          <option name="status" value={elem._id} key={elem._id}>
-                            {elem.cName}
-                          </option>
-                        );
-                      })
-                    : ""}
+                  <option value="">Select Category</option>
+                  {categories.map((c) => (
+                    <option value={c._id} key={c._id}>
+                      {c.cName}
+                    </option>
+                  ))}
                 </select>
               </div>
-            </div>
-            <div className="flex space-x-1 py-4">
-              <div className="w-1/2 flex flex-col space-y-1">
-                <label htmlFor="quantity">Units Available *</label>
+
+              {/* Quantity */}
+              <div className="flex flex-col">
+                <label>Quantity *</label>
                 <input
+                  type="number"
+                  className="px-4 py-2 border"
                   value={fData.pQuantity}
                   onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pQuantity: e.target.value,
-                    })
+                    setFdata({ ...fData, pQuantity: e.target.value })
                   }
-                  type="number"
-                  className="px-4 py-2 border focus:outline-none"
-                  id="quantity"
                 />
               </div>
-              {/* <div className="w-1/2 flex flex-col space-y-1">
-                <label htmlFor="offer">Product Offfer (%) *</label>
-                <input
-                  value={fData.pOffer}
-                  onChange={(e) =>
-                    setFdata({
-                      ...fData,
-                      error: false,
-                      success: false,
-                      pOffer: e.target.value,
-                    })
-                  }
-                  type="number"
-                  className="px-4 py-2 border focus:outline-none"
-                  id="offer"
-                />
-              </div> */}
             </div>
-            
-            
-            <div className="flex flex-col space-y-1 w-full pb-4 md:pb-6 mt-4">
-              <button
-                style={{ background: "#303031" }}
-                type="submit"
-                className="rounded-full bg-gray-800 text-gray-100 text-lg font-medium py-2"
-              >
-                Add Organ
-              </button>
-            </div>
+
+            <button
+              className="mt-4 w-full bg-gray-800 text-white py-2 rounded-full"
+              type="submit"
+            >
+              Add Organ
+            </button>
           </form>
         </div>
       </div>
@@ -330,24 +294,21 @@ const AddProductDetail = ({ categories }) => {
   );
 };
 
-const AddProductModal = (props) => {
+const AddProductModal = () => {
+  const [allCat, setAllCat] = useState([]);
+
   useEffect(() => {
     fetchCategoryData();
   }, []);
-
-  const [allCat, setAllCat] = useState([]);
 
   const fetchCategoryData = async () => {
     try {
       let responseData = await getAllCategory();
       if (responseData && responseData.Categories) {
         setAllCat(responseData.Categories);
-      } else {
-        setAllCat([]);
       }
     } catch (err) {
       console.error("fetchCategoryData error", err);
-      setAllCat([]);
     }
   };
 

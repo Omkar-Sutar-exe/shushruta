@@ -1,4 +1,5 @@
 import React, { Fragment, useState, useEffect, useContext } from "react";
+import moment from "moment";
 import { useParams } from "react-router-dom";
 import { ProductDetailsContext } from "./index";
 import { LayoutContext } from "../layout";
@@ -25,8 +26,9 @@ const ProductDetailsSection = (props) => {
   const [pImages, setPimages] = useState(null);
   const [count, setCount] = useState(0); // Slide change state
 
-  const [quantitiy, setQuantitiy] = useState(1); // Increse and decrese quantity state
+  const [countdown, setCountdown] = useState(null);
   const [, setAlertq] = useState(false); // Alert when quantity greater than stock
+  const [quantitiy, setQuantitiy] = useState(1); // Initialize quantity to 1
 
   const [wList, setWlist] = useState(
     JSON.parse(localStorage.getItem("wishList"))
@@ -34,8 +36,16 @@ const ProductDetailsSection = (props) => {
 
   useEffect(() => {
     fetchData();
+
+    const timer = setInterval(() => {
+      if (countdown > 0) {
+        setCountdown((prevCountdown) => prevCountdown - 1000);
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [countdown]);
 
   const fetchData = async () => {
     dispatch({ type: "loading", payload: true });
@@ -50,9 +60,19 @@ const ProductDetailsSection = (props) => {
           setPimages(responseData.Product.pImages);
           dispatch({ type: "loading", payload: false });
           layoutDispatch({ type: "inCart", payload: cartList() }); // This function change cart in cart state
-        }
+
+          // Calculate countdown
+          const expiryTime = moment(responseData.Product.expiryAt);
+          const now = moment();
+          const diff = expiryTime.diff(now);
+          if (diff > 0) {
+            setCountdown(diff);
+          } else {
+            setCountdown(0);
+          }
         if (responseData.error) {
-          console.log(responseData.error);
+            console.log(responseData.error);
+          }
         }
       }, 500);
     } catch (error) {
@@ -99,7 +119,7 @@ const ProductDetailsSection = (props) => {
       <Submenu
         value={{
           categoryId: sProduct.pCategory._id,
-          product: sProduct.pName,
+          product: sProduct.pTimeWindowHours,
           category: sProduct.pCategory.cName,
         }}
       />
@@ -175,9 +195,18 @@ const ProductDetailsSection = (props) => {
           <div className="col-span-2 mt-8 md:mt-0 md:col-span-4 md:ml-6 lg:ml-12">
             <div className="flex flex-col leading-8">
               <div className="text-2xl tracking-wider">{sProduct.pDescription}</div>
+              {countdown !== null && (
+                <div className="text-lg tracking-wider">
+                  {countdown > 0 ? (
+                    <span>Time Left: {moment.duration(countdown).humanize()}</span>
+                  ) : (
+                    <span className="text-red-500">Expired</span>
+                  )}
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <span className="text-xl tracking-wider text-yellow-700">
-                PIN Code: {sProduct.pPrice}
+
                 </span>
                 {/* <span>
                   <svg
@@ -379,7 +408,7 @@ const ProductDetailsSection = (props) => {
                         addToCart(
                           sProduct._id,
                           quantitiy,
-                          sProduct.pPrice,
+                          
                           layoutDispatch,
                           setQuantitiy,
                           setAlertq,

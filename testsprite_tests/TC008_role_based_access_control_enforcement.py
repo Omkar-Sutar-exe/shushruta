@@ -75,7 +75,7 @@ def test_role_based_access_control_enforcement():
                 data = {
                     "pName": "TestProduct",
                     "pDescription": "Desc",
-                    "pPrice": 10.0,
+
                     "pCategory": "TestCategory"
                 }
                 resp = requests.post(url, headers=headers_hospital, data=data, files=files, timeout=TIMEOUT)

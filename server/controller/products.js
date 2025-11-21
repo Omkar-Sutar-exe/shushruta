@@ -2,13 +2,14 @@ const productModel = require("../models/products");
 const userModel = require("../models/users");
 const fs = require("fs");
 const path = require("path");
+const cloudinary = require("cloudinary").v2;
 
 class Product {
   // Delete Image from uploads -> products folder
   static deleteImages(images, mode) {
     var basePath =
       path.resolve(__dirname + "../../") + "/public/uploads/products/";
-    console.log(basePath);
+
     for (var i = 0; i < images.length; i++) {
       let filePath = "";
       if (mode == "file") {
@@ -16,9 +17,9 @@ class Product {
       } else {
         filePath = basePath + `${images[i]}`;
       }
-      console.log(filePath);
+
       if (fs.existsSync(filePath)) {
-        console.log("Exists image");
+
       }
       fs.unlink(filePath, (err) => {
         if (err) {
@@ -38,78 +39,117 @@ class Product {
         return res.json({ Products });
       }
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   }
 
   async postAddProduct(req, res) {
-    let { pName, pDescription, pPrice, pQuantity, pCategory, pOffer, pStatus, user } =
-      req.body;
-    let images = req.files;
+
+
+
+    let { pName, pTimeWindowHours, pDescription, pQuantity, pCategory, pOffer, pStatus, user } = req.body;
+    let images = req.files.filter(file => file.fieldname === "pImage");
+    let medicalReport = req.files.find(file => file.fieldname === "pMedicalReport");
+    console.log("medicalReport:", medicalReport);
+    console.log("images.length:", images.length);
     // Validation
     if (
-      !pName |
-      !pDescription |
-      !pPrice |
-      !pQuantity |
-      !pCategory |
-      !pOffer |
-      !pStatus |
-      !user
+      !pName ||
+      !pTimeWindowHours ||
+      !pDescription ||
+      !pQuantity ||
+      !pCategory ||
+      !pOffer ||
+      !pStatus ||
+      !user ||
+      !medicalReport
     ) {
-      Product.deleteImages(images, "file");
+      if (images.length > 0) Product.deleteImages(images, "file");
+      if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
       return res.json({ error: "All filled must be required" });
     }
     // Validate Name and description
-    else if (pName.length > 255 || pDescription.length > 3000) {
-      Product.deleteImages(images, "file");
+    else if (pDescription.length > 3000) {
+      if (images.length > 0) Product.deleteImages(images, "file");
+      if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
       return res.json({
         error: "Name 255 & Description must not be 3000 charecter long",
       });
     }
     // Validate Images
-    else if (images.length !== 2) {
-      Product.deleteImages(images, "file");
-      return res.json({ error: "Must need to provide 2 images" });
-      } else {
-        try {
-          // Fetch hospital user details to auto-populate contact information
-          const hospitalUser = await userModel.findById(user).select("name email phoneNumber userType");
-          
-          if (!hospitalUser) {
-            Product.deleteImages(images, "file");
-            return res.json({ error: "Hospital user not found" });
-          }
-          
-          if (hospitalUser.userType !== "hospital") {
-            Product.deleteImages(images, "file");
-            return res.json({ error: "Only hospitals can add products" });
-          }
-          
-          let allImages = [];
-          for (const img of images) {
-            allImages.push(img.filename);
-          }
-          let newProduct = new productModel({
-            pImages: allImages,
-            pName,
-            pDescription,
-            pPrice,
-            pQuantity,
-            pCategory,
-            pOffer,
-            pStatus,
-            user,
-            hname: hospitalUser.name,
-            hemail: hospitalUser.email,
-            hphone: hospitalUser.phoneNumber || "",
-          });
+    else if (images.length < 1) {
+      if (images.length > 0) Product.deleteImages(images, "file");
+      if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
+      return res.json({ error: "Must need to provide at least 1 image" });
+    } else {
+      try {
+        // Fetch hospital user details to auto-populate contact information
+        const hospitalUser = await userModel.findById(user).select("name email phoneNumber userType");
+        
+        if (!hospitalUser) {
+          if (images.length > 0) Product.deleteImages(images, "file");
+          if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
+          return res.json({ error: "Hospital user not found" });
+        }
+        
+        if (hospitalUser.userType !== "hospital") {
+          if (images.length > 0) Product.deleteImages(images, "file");
+          if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
+          return res.json({ error: "Only hospitals can add products" });
+        }
+        
+        let allImages = [];
+        for (const img of images) {
+          allImages.push(img.filename);
+        }
+        let newProduct = new productModel({
+          pImages: allImages,
+          pName,
+          pTimeWindowHours,
+          expiryAt: new Date(Date.now() + pTimeWindowHours * 3600000),
+          isExpired: false,
+          pDescription,
+
+          pQuantity,
+          pCategory,
+          pOffer,
+          pStatus,
+          user,
+          hname: hospitalUser.name,
+          hemail: hospitalUser.email,
+          hphone: hospitalUser.phoneNumber || "",
+        });
         let save = await newProduct.save();
         if (save) {
+          // Handle medical report upload to Cloudinary
+          if (medicalReport) {
+            const organId = save._id;
+            const folderPath = `shushruta/organs/${organId}/medical_report`;
+            try {
+              const result = await cloudinary.uploader.upload(medicalReport.path, {
+                folder: folderPath,
+              });
+              // Update product with medical report URL (will require model update)
+              await productModel.findByIdAndUpdate(organId, {
+                $set: { pMedicalReport: result.secure_url }
+              });
+              // Delete temporary file
+              fs.unlink(medicalReport.path, (err) => err);
+            } catch (cloudErr) {
+
+              // Delete product if medical report upload fails
+              await productModel.findByIdAndDelete(organId);
+              Product.deleteImages(images, "file");
+              fs.unlink(medicalReport.path, (err) => err);
+              return res.json({ error: "Failed to upload medical report" });
+            }
+          }
           return res.json({ success: "Product created successfully" });
         }
       } catch (err) {
-        console.log(err);
+        console.error(err);
+        if (images.length > 0) Product.deleteImages(images, "file");
+        if (medicalReport) fs.unlink(medicalReport.path, (err) => err);
       }
     }
   }
@@ -117,9 +157,9 @@ class Product {
   async postEditProduct(req, res) {
     let {
       pId,
-      pName,
+      pTimeWindowHours,
       pDescription,
-      pPrice,
+
       pQuantity,
       pCategory,
       pOffer,
@@ -133,7 +173,7 @@ class Product {
       !pId |
       !pName |
       !pDescription |
-      !pPrice |
+      !pQuantity |
       !pQuantity |
       !pCategory |
       !pOffer |
@@ -148,20 +188,20 @@ class Product {
       });
     }
     // Validate Update Images
-    else if (editImages && editImages.length == 1) {
+    else if (editImages && editImages.length < 1) {
       Product.deleteImages(editImages, "file");
-      return res.json({ error: "Must need to provide 2 images" });
+      return res.json({ error: "Must need to provide at least 1 image" });
     } else {
       let editData = {
         pName,
         pDescription,
-        pPrice,
+
         pQuantity,
         pCategory,
         pOffer,
         pStatus,
       };
-      if (editImages.length == 2) {
+      if (editImages.length > 0) {
         let allEditImages = [];
         for (const img of editImages) {
           allEditImages.push(img.filename);
@@ -172,11 +212,11 @@ class Product {
       try {
         let editProduct = productModel.findByIdAndUpdate(pId, editData);
         editProduct.exec((err) => {
-          if (err) console.log(err);
+          if (err);
           return res.json({ success: "Product edit successfully" });
         });
       } catch (err) {
-        console.log(err);
+
       }
     }
   }
@@ -195,7 +235,7 @@ class Product {
           return res.json({ success: "Product deleted successfully" });
         }
       } catch (err) {
-        console.log(err);
+
       }
     }
   }
@@ -214,7 +254,7 @@ class Product {
           return res.json({ Product: singleProduct });
         }
       } catch (err) {
-        console.log(err);
+
       }
     }
   }
@@ -237,24 +277,6 @@ class Product {
     }
   }
 
-  async getProductByPrice(req, res) {
-    let { price } = req.body;
-    if (!price) {
-      return res.json({ error: "All filled must be required" });
-    } else {
-      try {
-        let products = await productModel
-          .find({ pPrice: { $lt: price } })
-          .populate("pCategory", "cName")
-          .sort({ pPrice: -1 });
-        if (products) {
-          return res.json({ Products: products });
-        }
-      } catch (err) {
-        return res.json({ error: "Filter product wrong" });
-      }
-    }
-  }
 
   async getWishProduct(req, res) {
     let { productArray } = req.body;
@@ -315,7 +337,7 @@ class Product {
               });
               newRatingReview.exec((err, result) => {
                 if (err) {
-                  console.log(err);
+                  if (err);
                 }
                 return res.json({ success: "Thanks for your review" });
               });
@@ -333,7 +355,7 @@ class Product {
           });
           newRatingReview.exec((err, result) => {
             if (err) {
-              console.log(err);
+
             }
             return res.json({ success: "Thanks for your review" });
           });
@@ -355,12 +377,12 @@ class Product {
         });
         reviewDelete.exec((err, result) => {
           if (err) {
-            console.log(err);
+
           }
           return res.json({ success: "Your review is deleted" });
         });
       } catch (err) {
-        console.log(err);
+
       }
     }
   }
