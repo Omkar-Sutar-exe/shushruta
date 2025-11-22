@@ -1,68 +1,38 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Client (Frontend)
 
-## Available Scripts
+## Purpose
 
-In the project directory, you can run:
+The client-side application is the user interface for the OrganEase platform, built using React.js. It provides an interactive and responsive experience for different user roles, including administrators, super administrators, and general users (hospitals/individuals). The client handles user authentication, displays organ availability, facilitates organ requests, processes payments, and manages user-specific dashboards and profiles.
 
-### `npm start`
+## Directory Structure
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+*   `public/`: Contains static assets like `index.html` and `style.css`.
+*   `src/`:
+    *   `components/`:
+        *   `admin/`: Components specific to the administrator dashboard, including categories, dashboard, hospital details, layout, orders, partials (navbar, sidebar, footer), and products.
+        *   `common/`: Shared components like `MapComponent.js`.
+        *   `shop/`: Components for the general user interface, including authentication, user dashboard, home page, layout, order process, partials (cart modal, footer, navbar), product details, and wishlist.
+        *   `superadmin/`: Components for the super administrator dashboard, including categories and requests.
+    *   `hooks/`: Custom React hooks, such as `useNominatimAutocomplete.js`.
+    *   `App.js`: The main application component.
+    *   `index.js`: The entry point for the React application.
+    *   `serviceWorker.js`: For progressive web app functionalities.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+## Technologies Used
 
-### `npm test`
+*   **React.js:** A JavaScript library for building user interfaces.
+*   **React Router DOM:** For declarative routing in React applications.
+*   **Axios:** Promise-based HTTP client for making API requests.
+*   **Bootstrap:** A popular CSS framework for styling and responsive design.
+*   **Leaflet & React-Leaflet:** For interactive maps to display location-based information.
+*   **Moment.js:** For parsing, validating, manipulating, and formatting dates and times.
+*   **Socket.IO Client:** For real-time, bidirectional communication with the server.
+*   **Braintree Web Drop-in React:** Integration for secure payment processing.
+*   **Nodemailer:** (Likely used for client-side email sending, though typically handled server-side, it's listed as a client dependency).
+*   **Twilio:** (Likely used for client-side phone verification or notifications, though typically handled server-side, it's listed as a client dependency).
+*   **@testing-library/jest-dom, @testing-library/react, @testing-library/user-event:** Testing utilities for React components.
+*   **react-scripts:** Scripts for common development tasks like starting, building, and testing the React application.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Setup and Running
 
-### `npm run build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Refer to the main `README.md` in the project root for overall installation and running instructions. Ensure the backend server is running before starting the client application.
