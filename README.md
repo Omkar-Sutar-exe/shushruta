@@ -1,89 +1,117 @@
-# OrganEase
+# Shushruta
 
 ## Project Description
 
-'OrganEase' is a web application designed to streamline the process of organ donation and transplantation. It addresses the critical need for efficient communication and data management in organ procurement and transplant centers. The existing manual methods are prone to errors and time-consuming, which can have severe consequences given the urgency of organ operations.
+Shushruta, formerly known as 'OrganEase', is a comprehensive web application designed to streamline the organ transfer process. It addresses the critical need for speed and accuracy in organ procurement and transplantation by replacing manual, error-prone methods with an efficient digital platform. The system allows procurement and transplant centers to display available organs and their details in real-time, enabling hospitals to quickly request compatible organs and confirm transfers.
 
-OrganEase aims to digitize and automate these processes, allowing procurement and transplant centers to display available organs and their details in real-time. Hospitals can then request organs with suitable compatibility (e.g., blood group) directly through the portal, make payments as a token of confirmation, and procurement centers can confirm these requests. This system significantly reduces the time and effort involved in organ allocation, ultimately saving lives.
+## Key Features
 
-## Features
-
-*   **Real-time Organ Availability:** Procurement centers can display organs stored in hypothermic storages with their details.
-*   **Streamlined Organ Request:** Hospitals can request organs with specific compatibility criteria.
-*   **Payment Integration:** Secure payment processing for organ transfer confirmation.
-*   **Request Confirmation:** Procurement centers can confirm organ requests through the portal.
-*   **User Roles:** (Assumed based on folder structure: Admin, SuperAdmin, User/Shop)
-    *   **Admin:** Manage categories, products, orders, and hospital details.
-    *   **SuperAdmin:** Oversee requests and dashboard.
-    *   **User/Shop:** Browse products, manage wishlists, view orders, and update profiles.
+*   **Admin Panel**:
+    *   Category Management (Add, Edit, View Categories)
+    *   Product Management (Add, Edit, View Products)
+    *   Order Management (View, Update Orders)
+    *   Dashboard Analytics (Today's Sell, Customization)
+    *   Hospital Profile Management
+*   **User Dashboard**:
+    *   User Profile Management
+    *   Order Tracking
+    *   Document Upload and Management
+    *   Phone Verification
+*   **Shop/E-commerce Functionality**:
+    *   Product Listing by Category
+    *   Single Product View with Details and Reviews
+    *   Shopping Cart and Checkout Flow
+    *   Wishlist Functionality
+    *   User Authentication (Login, Signup, Forgot/Reset Password)
+*   **Super Admin Panel**:
+    *   Category Management
+    *   Request Management
+    *   Dashboard Analytics
+*   **Real-time Communication**:
+    *   Socket.io for real-time updates (e.g., order status)
+*   **Location-based Services**:
+    *   Map integration (Leaflet) for potential location-aware features.
+*   **Payment Gateway Integration**:
+    *   Braintree for secure transactions.
+*   **SMS and Email Notifications**:
+    *   Twilio for SMS and Nodemailer for email.
 
 ## Technologies Used
 
-### Frontend (Client)
+### Client-side (React.js)
 
-*   **React.js:** A JavaScript library for building user interfaces.
-*   **React Router DOM:** For declarative routing in React applications.
-*   **Axios:** Promise-based HTTP client for the browser and Node.js.
-*   **Bootstrap:** A popular CSS framework for responsive and mobile-first front-end web development.
-*   **Leaflet & React-Leaflet:** An open-source JavaScript library for mobile-friendly interactive maps, integrated with React.
-*   **Moment.js:** A JavaScript date library for parsing, validating, manipulating, and formatting dates.
-*   **Socket.IO Client:** For real-time, bidirectional event-based communication.
-*   **Braintree Web Drop-in React:** For payment gateway integration.
-*   **Nodemailer:** Module for Node.js applications to allow easy email sending.
-*   **Twilio:** For SMS and voice communication (likely for phone verification or notifications).
+*   **React**: A JavaScript library for building user interfaces.
+*   **React Router DOM**: Declarative routing for React.js.
+*   **Axios**: Promise-based HTTP client for the browser and Node.js.
+*   **Bootstrap**: Front-end component library for responsive design.
+*   **Leaflet & React-Leaflet**: Interactive maps.
+*   **Moment.js**: Parse, validate, manipulate, and display dates and times.
+*   **Socket.io-client**: Real-time bidirectional event-based communication.
+*   **Braintree-web-drop-in-react**: Braintree payment UI integration for React.
+*   **Twilio**: For SMS services.
+*   **Nodemailer**: For email services.
 
-### Backend (Server)
+### Server-side (Node.js with Express)
 
-*   **Node.js:** JavaScript runtime built on Chrome's V8 JavaScript engine.
-*   **Express.js:** A fast, unopinionated, minimalist web framework for Node.js.
-*   **MongoDB:** A NoSQL document database.
-*   **Mongoose:** MongoDB object data modeling (ODM) for Node.js.
-*   **Leaflet & React-Leaflet:** (Also listed in root package.json, likely used for server-side map rendering or data processing related to location)
+*   **Node.js**: JavaScript runtime environment.
+*   **Express.js**: Web application framework for Node.js.
+*   **MongoDB (via Mongoose)**: NoSQL database and ODM for Node.js.
+*   **Bcryptjs**: For password hashing.
+*   **Braintree**: Payment gateway integration.
+*   **Cloudinary**: Cloud-based image and video management.
+*   **CORS**: Middleware for enabling Cross-Origin Resource Sharing.
+*   **Crypto-js**: JavaScript library of crypto standards.
+*   **Dotenv**: Loads environment variables from a `.env` file.
+*   **Express-fileupload**: Middleware for uploading files.
+*   **Fuse.js**: Lightweight fuzzy-search library.
+*   **Geolib**: Library to work with geographic coordinates.
+*   **JSON Web Token (jsonwebtoken)**: For authentication.
+*   **Leaflet & React-Leaflet**: Interactive maps.
+*   **Libphonenumber-js**: Phone number parsing and formatting.
+*   **Morgan**: HTTP request logger middleware.
+*   **Multer**: Middleware for handling `multipart/form-data`.
+*   **Natural**: Natural language processing for Node.js.
+*   **Nodemailer**: For sending emails.
+*   **Nodemon**: Utility that monitors for changes in your source and automatically restarts your server.
+*   **Socket.io**: Real-time bidirectional event-based communication.
+*   **Twilio**: For SMS services.
 
 ## Prerequisites
 
-Before you begin, ensure you have the following installed:
-
-*   **Node.js** (which includes npm)
-*   **MongoDB cluster** created and its connection string added to your system's environment variables.
+*   NPM and Node.js installed
+*   MongoDB cluster created and added to the system's environment variable
 
 ## Installation
 
-To set up the project locally, follow these steps:
+Execute these commands from the project directory:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone <repository_url>
-    cd shushruta
-    ```
+```bash
+cd client && npm install
+cd server && npm install
+```
 
-2.  **Install client dependencies:**
-    ```bash
-    cd client
-    npm install
-    cd ..
-    ```
+## Running the App
 
-3.  **Install server dependencies:**
-    ```bash
-    cd server
-    npm install
-    cd ..
-    ```
+Open a terminal in the `server` directory:
 
-## Running the Application
+```bash
+npm start:dev
+```
 
-1.  **Start the server:**
-    Open a terminal in the `server` directory and run:
-    ```bash
-    npm start:dev
-    ```
+And open another terminal in the `client` directory:
 
-2.  **Start the client:**
-    Open another terminal in the `client` directory and run:
-    ```bash
-    npm start
-    ```
+```bash
+npm start
+```
 
-3.  **Access the application:**
-    Open your web browser and navigate to `http://localhost:3000/`.
+## Access the Web App
+
+Access the web application on your system at `http://localhost:3000/`
+
+## License
+
+This project is licensed under the ISC License.
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit pull requests or open issues.

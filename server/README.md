@@ -1,47 +1,49 @@
-# Server (Backend)
+# Server-side Application (Shushruta API)
 
-## Purpose
-
-The server-side application, named 'Sushruta', serves as the backend for the OrganEase platform. It handles all data management, business logic, API endpoints, and interactions with the MongoDB database. It is responsible for user authentication, managing categories, products (organs), orders, and hospital details, as well as facilitating payment processing and real-time communication.
-
-## Directory Structure
-
-*   `blockchain/`: Contains logic related to blockchain integration (e.g., `blockchain.js`).
-*   `config/`: Configuration files for database connection, functions, keys, mailer, Nominatim (for location services), and upload folder creation.
-*   `controller/`: Implements the business logic for various API endpoints, interacting with models and handling requests for admin, authentication, Braintree payments, categories, customization, orders, products, similarity (likely for organ matching), and users.
-*   `middleware/`: Contains middleware functions, such as authentication checks.
-*   `models/`: Defines the Mongoose schemas and models for categories, customization, orders, products, and users, representing the data structure in MongoDB.
-*   `public/`: Stores static assets, primarily uploaded images for categories, customization, and products.
-*   `routes/`: Defines the API routes for different functionalities, mapping URLs to controller functions.
-*   `utils/`: Utility functions, such as `nlp.js` (likely for natural language processing related to organ descriptions or matching).
-*   `server.js`: The main entry point of the server application.
+This directory contains the server-side application (API) for Shushruta, built using Node.js and Express.js. It handles all the backend logic, including database interactions, API endpoints for client-side requests, authentication, payment processing, and real-time communication.
 
 ## Technologies Used
 
-*   **Node.js:** JavaScript runtime for executing server-side code.
-*   **Express.js:** Web application framework for building robust APIs.
-*   **MongoDB & Mongoose:** NoSQL database and its ODM for data storage and interaction.
-*   **bcryptjs:** For hashing passwords securely.
-*   **braintree:** Payment gateway integration.
-*   **cloudinary:** Cloud-based image and video management.
-*   **cookie-parser:** Middleware for parsing cookies.
-*   **cors:** Middleware for enabling Cross-Origin Resource Sharing.
-*   **crypto-js:** Cryptographic algorithms.
-*   **dotenv:** Loads environment variables from a `.env` file.
-*   **express-fileupload:** Middleware for uploading files.
-*   **fuse.js:** Lightweight fuzzy-search library.
-*   **geolib:** Library for geographic calculations.
-*   **jsonwebtoken:** For creating and verifying JSON Web Tokens for authentication.
-*   **leaflet & react-leaflet:** (Also listed in root package.json, likely used for server-side map rendering or data processing related to location)
-*   **libphonenumber-js:** For parsing, validating, and formatting phone numbers.
-*   **morgan:** HTTP request logger middleware.
-*   **multer:** Middleware for handling `multipart/form-data`, primarily for file uploads.
-*   **natural:** A general natural language facility for Node.js.
-*   **nodemailer:** For sending emails.
-*   **nodemon:** Utility that monitors for changes in your source and automatically restarts your server.
-*   **socket.io:** For real-time, bidirectional event-based communication.
-*   **twilio:** For SMS and voice communication.
+*   **Node.js**: JavaScript runtime environment.
+*   **Express.js**: Web application framework for Node.js.
+*   **MongoDB (via Mongoose)**: NoSQL database and ODM for Node.js.
+*   **Bcryptjs**: For password hashing.
+*   **Braintree**: Payment gateway integration.
+*   **Cloudinary**: Cloud-based image and video management.
+*   **CORS**: Middleware for enabling Cross-Origin Resource Sharing.
+*   **Crypto-js**: JavaScript library of crypto standards.
+*   **Dotenv**: Loads environment variables from a `.env` file.
+*   **Express-fileupload**: Middleware for uploading files.
+*   **Fuse.js**: Lightweight fuzzy-search library.
+*   **Geolib**: Library to work with geographic coordinates.
+*   **JSON Web Token (jsonwebtoken)**: For authentication.
+*   **Leaflet & React-Leaflet**: Interactive maps.
+*   **Libphonenumber-js**: Phone number parsing and formatting.
+*   **Morgan**: HTTP request logger middleware.
+*   **Multer**: Middleware for handling `multipart/form-data`.
+*   **Natural**: Natural language processing for Node.js.
+*   **Nodemailer**: For sending emails.
+*   **Nodemon**: Utility that monitors for changes in your source and automatically restarts your server.
+*   **Socket.io**: Real-time bidirectional event-based communication.
+*   **Twilio**: For SMS services.
 
-## Setup and Running
+## Project Structure
 
-Refer to the main `README.md` in the project root for overall installation and running instructions. Ensure that MongoDB is running and accessible, and environment variables (e.g., MongoDB connection string, API keys) are correctly configured.
+The `server` directory is organized into the following main sections:
+
+*   `app.js`: The main application file, setting up Express and middleware.
+*   `server.js`: Entry point for the server, typically starts the Express app.
+*   `controllers`: Contains the logic for handling requests and interacting with models.
+*   `models`: Defines the Mongoose schemas for the MongoDB database.
+*   `routes`: Defines the API endpoints and links them to the appropriate controllers.
+*   `middleware`: Custom middleware functions (e.g., for authentication, error handling).
+*   `config`: Configuration files (e.g., database connection, environment variables).
+*   `utils`: Utility functions used across the server.
+
+## Available Scripts
+
+In the `server` directory, you can run:
+
+### `npm start:dev`
+
+Runs the server in development mode using `nodemon`, which automatically restarts the server upon file changes.
