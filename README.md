@@ -2,7 +2,7 @@
 
 ## Project Description
 
-Shushruta, formerly known as 'OrganEase', is a comprehensive web application designed to streamline the organ transfer process. It addresses the critical need for speed and accuracy in organ procurement and transplantation by replacing manual, error-prone methods with an efficient digital platform. The system allows procurement and transplant centers to display available organs and their details in real-time, enabling hospitals to quickly request compatible organs and confirm transfers.
+Shushruta, is a comprehensive web application designed to streamline the organ transfer process. It addresses the critical need for speed and accuracy in organ procurement and transplantation by replacing manual, error-prone methods with an efficient digital platform. The system allows procurement and transplant centers to display available organs and their details in real-time, enabling hospitals to quickly request compatible organs and confirm transfers.
 
 ## Key Features
 
